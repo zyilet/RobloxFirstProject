@@ -12,8 +12,8 @@ import { Players } from "@rbxts/services";
 import GameTest from "./GameTest";
 import CameraSystem from "./game/CameraSystem";
 
-Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
-Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
+// Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
+// Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
 
 Knit.Start()
     .andThen(() => {

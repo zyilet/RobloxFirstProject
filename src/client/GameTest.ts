@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-01 14:46:19
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-02 16:21:45
+ * @LastEditTime: 2023-11-03 17:39:58
  * @FilePath: \RobloxFirstProject\src\client\GameTest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -17,35 +17,60 @@
 
 import { Players, ReplicatedStorage, RunService, UserInputService, Workspace } from "@rbxts/services";
 import Projectile from "shared/Projectile";
+import MovementSystem, { MovementType } from "./game/MovementSystem";
+import { Clack, Keyboard } from "@rbxts/clack";
+import GameObjLoader from "./game/GameObjLoader";
 
 export default class GameTest {
 
-    public Run(): void {
-        // Players.LocalPlayer.GetMouse().Button1Down.Connect(() => {
-        //     print("创建火球")
-        //     new FireBall();
-        // });
+    public async Run(): Promise<void> {
+
+        MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+
+        UserInputService.InputBegan.Connect((i, p) => {
+            if (i.KeyCode === Enum.KeyCode.G) {
+                MovementSystem.GetInstance().SetMovementType(MovementType.Default);
+            }
+            if (i.KeyCode === Enum.KeyCode.H) {
+                MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+            }
+        })
+
+        let humanoid = GameObjLoader.GetInstance().GetHumanoid();
+        let keyboard = new Keyboard();
+        let speed = 10;
+        RunService.Heartbeat.Connect(dt => {
+            if (keyboard.isKeyDownAllowProcessed(Enum.KeyCode.Space)) {
+                humanoid.ChangeState(Enum.HumanoidStateType.Flying);
+                let moveVector = new Vector3(0, 1, 0).mul(speed);
+                humanoid.Move(moveVector);
+            }
+            else {
+                humanoid.ChangeState(Enum.HumanoidStateType.GettingUp);
+            }
+        })
+
 
         // offsetCamera();
 
-        RunService.Heartbeat.Connect(dt => {
+        // RunService.Heartbeat.Connect(dt => {
 
-        })
+        // })
 
-        UserInputService.InputBegan.Connect(input => {
-            if (input.UserInputType === Enum.UserInputType.MouseWheel) {
-                return Enum.ContextActionResult.Sink;
-            }
-        });
+        // UserInputService.InputBegan.Connect(input => {
+        //     if (input.UserInputType === Enum.UserInputType.MouseWheel) {
+        //         return Enum.ContextActionResult.Sink;
+        //     }
+        // });
 
-        let playerRoot: Part;
-        let char: Model;
+        // let playerRoot: Part;
+        // let char: Model;
 
-        Players.LocalPlayer.CharacterAdded.Connect(character => {
-            char = character;
-            let root = character.WaitForChild("RightHand");
-            playerRoot = root as Part;
-        });
+        // Players.LocalPlayer.CharacterAdded.Connect(character => {
+        //     char = character;
+        //     let root = character.WaitForChild("RightHand");
+        //     playerRoot = root as Part;
+        // });
 
         // Players.LocalPlayer.GetMouse().Button1Down.Connect(() => {
         //     // //在玩家的位置创建一个part
@@ -63,25 +88,22 @@ export default class GameTest {
         //     print(result);
         // });
 
-        Players.LocalPlayer.GetMouse().Button1Down.Connect(() => {
-            let camera = Workspace.CurrentCamera;
-            let ray = camera!.ScreenPointToRay(camera!.ViewportSize.X / 2, camera!.ViewportSize.Y / 2);
-            let dir = ray!.Direction.mul(1000);
+        // Players.LocalPlayer.GetMouse().Button1Down.Connect(() => {
+        //     let camera = Workspace.CurrentCamera;
+        //     let ray = camera!.ScreenPointToRay(camera!.ViewportSize.X / 2, camera!.ViewportSize.Y / 2);
+        //     let dir = ray!.Direction.mul(1000);
 
-            let dest = camera!.CFrame.LookVector.mul(1000);
-            let p = new RaycastParams();
-            p.FilterType = Enum.RaycastFilterType.Exclude;
-            p.FilterDescendantsInstances = [char];
-            let rayCastResult = Workspace.Raycast(ray.Origin, dir, p);
-            if (rayCastResult) {
-                print(rayCastResult.Instance.Name)
-                dest = rayCastResult.Position;
-            }
+        //     let dest = camera!.CFrame.LookVector.mul(1000);
+        //     let p = new RaycastParams();
+        //     p.FilterType = Enum.RaycastFilterType.Exclude;
+        //     p.FilterDescendantsInstances = [char];
+        //     let rayCastResult = Workspace.Raycast(ray.Origin, dir, p);
+        //     if (rayCastResult) {
+        //         dest = rayCastResult.Position;
+        //     }
 
-            new Projectile(1, 3, char).Cast(playerRoot.Position, dest, 10);
-
-            print(math.huge)
-        })
+        //     new Projectile(1, 3, char).Cast(playerRoot.Position, dest, 10);
+        // })
     }
 
 }

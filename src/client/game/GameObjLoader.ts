@@ -34,4 +34,9 @@ export default class GameObjLoader {
         let character = this.GetCharacter();
         return character.WaitForChild("HumanoidRootPart") as Part;
     }
+
+    public GetHumanoidRootAttachment() {
+        let root = this.GetHumanoidRoot();
+        return root.WaitForChild("RootAttachment") as Attachment;
+    }
 }

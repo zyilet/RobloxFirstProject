@@ -8,3 +8,12 @@
  */
 
 export const FarDistance = 1000000;
+export const StudPerMeter = 100 / 28;
+
+export function MeterToStud(meter: number) {
+    return meter * StudPerMeter;
+}
+
+export function AngleToRad(angle: number) {
+    return math.rad(angle);
+}

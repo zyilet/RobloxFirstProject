@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-01 14:46:19
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-03 17:39:58
+ * @LastEditTime: 2023-11-04 17:36:07
  * @FilePath: \RobloxFirstProject\src\client\GameTest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,40 +15,114 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
-import { Players, ReplicatedStorage, RunService, UserInputService, Workspace } from "@rbxts/services";
+import { ContextActionService, Players, ReplicatedStorage, RunService, UserInputService, Workspace } from "@rbxts/services";
 import Projectile from "shared/Projectile";
 import MovementSystem, { MovementType } from "./game/MovementSystem";
 import { Clack, Keyboard } from "@rbxts/clack";
 import GameObjLoader from "./game/GameObjLoader";
+import MovingCtrl from "./game/MovingCtrl";
+import { MeterToStud } from "shared/Constants";
+import { Transform } from "shared/Transform";
 
 export default class GameTest {
 
     public async Run(): Promise<void> {
 
-        MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
-
-        UserInputService.InputBegan.Connect((i, p) => {
-            if (i.KeyCode === Enum.KeyCode.G) {
-                MovementSystem.GetInstance().SetMovementType(MovementType.Default);
-            }
-            if (i.KeyCode === Enum.KeyCode.H) {
-                MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
-            }
-        })
+        // new MovingCtrl().Init();
 
         let humanoid = GameObjLoader.GetInstance().GetHumanoid();
+        let root = GameObjLoader.GetInstance().GetHumanoidRoot();
         let keyboard = new Keyboard();
+        let camera = GameObjLoader.GetInstance().GetCurrentCamera();
         let speed = 10;
-        RunService.Heartbeat.Connect(dt => {
-            if (keyboard.isKeyDownAllowProcessed(Enum.KeyCode.Space)) {
-                humanoid.ChangeState(Enum.HumanoidStateType.Flying);
-                let moveVector = new Vector3(0, 1, 0).mul(speed);
-                humanoid.Move(moveVector);
-            }
-            else {
-                humanoid.ChangeState(Enum.HumanoidStateType.GettingUp);
-            }
-        })
+
+        Transform.DrawLine(() => root.Position, () => new Vector3(0, MeterToStud(2), 0));
+
+        // let wFlag = false;
+
+        // ContextActionService.BindAction("test", (name, state, input) => {
+        //     if (input.KeyCode === Enum.KeyCode.W) {
+        //         if (state === Enum.UserInputState.Begin) {
+        //             wFlag = true;
+        //         }
+        //         else {
+        //             wFlag = false;
+        //         }
+        //     }
+        // }, false, Enum.KeyCode.W, Enum.KeyCode.S, Enum.KeyCode.A, Enum.KeyCode.D,)
+
+        // RunService.Heartbeat.Connect(dt => {
+        //     if (wFlag) {
+        //         let curPos = root.CFrame.Position;
+        //         let targetPos = curPos.add(camera.CFrame.LookVector.Unit.mul(20).mul(dt));
+        //         root.CFrame = new CFrame(targetPos)
+
+        //     }
+        // })
+
+        // MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+
+        // UserInputService.InputBegan.Connect((i, p) => {
+        //     if (i.KeyCode === Enum.KeyCode.G) {
+        //         MovementSystem.GetInstance().SetMovementType(MovementType.Default);
+        //     }
+        //     if (i.KeyCode === Enum.KeyCode.H) {
+        //         MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+        //     }
+        // })
+
+
+        // UserInputService.InputBegan.Connect((key, processed) => {
+
+        //     if (key.KeyCode === Enum.KeyCode.F) {
+        //         print("F")
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Running, false);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Climbing, false);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.FallingDown, false);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Freefall, false);
+        //         humanoid.ChangeState(Enum.HumanoidStateType.Flying);
+        //     }
+
+        //     if (key.KeyCode === Enum.KeyCode.V) {
+        //         print("V")
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Running, true);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Climbing, true);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.FallingDown, true);
+        //         humanoid.SetStateEnabled(Enum.HumanoidStateType.Freefall, true);
+        //         humanoid.ChangeState(Enum.HumanoidStateType.Running);
+        //     }
+        // })
+
+        // humanoid.ChangeState(Enum.HumanoidStateType.Physics);
+        // let t = new Instance("VectorForce", humanoid);
+        // t.Force = new Vector3(0, root.AssemblyMass * Workspace.Gravity, 0);
+        // t.RelativeTo = Enum.ActuatorRelativeTo.World;
+        // t.Attachment0 = GameObjLoader.GetInstance().GetHumanoidRootAttachment();
+
+
+        // ContextActionService.BindAction("Fly", (name, state, input) => {
+        //     if (state === Enum.UserInputState.End) {
+        //         return Enum.ContextActionResult.Pass;
+        //     }
+
+
+        //     // if (humanoid.GetState() === Enum.HumanoidStateType.Jumping) {
+        //     //     humanoid.Jump = true;
+        //     // }
+
+        //     // return Enum.ContextActionResult.Pass;
+        // }, false, Enum.KeyCode.Space)
+
+        // RunService.Heartbeat.Connect(dt => {
+        //     if (keyboard.isKeyDownAllowProcessed(Enum.KeyCode.Space)) {
+        //         humanoid.ChangeState(Enum.HumanoidStateType.Flying);
+        //         let moveVector = new Vector3(0, 1, 0).mul(speed);
+        //         humanoid.Move(moveVector);
+        //     }
+        //     else {
+        //         humanoid.ChangeState(Enum.HumanoidStateType.GettingUp);
+        //     }
+        // })
 
 
         // offsetCamera();

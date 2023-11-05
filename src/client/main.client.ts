@@ -19,11 +19,12 @@ import { Component } from "@rbxts/knit"
 import { Players } from "@rbxts/services";
 import GameTest from "./GameTest";
 
-Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
+// Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
 
 Knit.Start()
-    .andThen(() => {
+    .andThen(() =>
+    {
 
         print("Clinet Started");
         // CameraSystem.GetInstance().Run();
@@ -49,7 +50,6 @@ Knit.Start()
         // PointService.GetPointsPromise().then(points => {
         //     print("Got points:", points);
         // });
-
 
 
         new GameTest().Run();

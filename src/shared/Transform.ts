@@ -1,17 +1,21 @@
 import { RunService, Workspace } from "@rbxts/services";
 
-export class Transform {
+export class Transform
+{
     //在局部坐标系中进行位移
-    static MoveInLocal(cFrame: CFrame, distance: Vector3): CFrame {
+    static MoveInLocal(cFrame: CFrame, distance: Vector3): CFrame
+    {
         return cFrame.ToWorldSpace(new CFrame(distance));
     }
 
     //返回局部坐标系中的某个位置所对应的世界坐标系中的位置。
-    static PointLocalToWorld(cFrame: CFrame, point: Vector3): Vector3 {
+    static PointLocalToWorld(cFrame: CFrame, point: Vector3): Vector3
+    {
         return cFrame.ToWorldSpace(new CFrame(point)).Position;
     }
 
-    static DrawLine(startPosGetter: () => Vector3, endPosGetter: () => Vector3) {
+    static DrawLine(startPosGetter: () => Vector3, endPosGetter: () => Vector3)
+    {
 
         let part = new Instance("Part");
         part.Anchored = true;
@@ -21,7 +25,8 @@ export class Transform {
 
         let updateTimer = 0;
         let updateInterval = 0.1;
-        let connection = RunService.Heartbeat.Connect(dt => {
+        let connection = RunService.Heartbeat.Connect(dt =>
+        {
             updateTimer += dt;
             if (updateTimer < updateInterval)
                 return;
@@ -37,6 +42,11 @@ export class Transform {
             part.Parent = Workspace;
         })
 
-        return connection;
+
+        return () =>
+        {
+            connection.Disconnect();
+            part.Destroy();
+        }
     }
 }

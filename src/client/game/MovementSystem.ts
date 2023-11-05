@@ -1,6 +1,6 @@
 import { ContextActionService, Players, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import GameObjLoader from "./GameObjLoader";
-import { FarDistance } from "shared/Constants";
+import { OneKM } from "shared/Constants";
 import { Keyboard } from "@rbxts/clack";
 
 //运动模式类型
@@ -142,7 +142,7 @@ class GroundController extends BaseController {
             .mul(CFrame.Angles(math.rad(this.AxisXAngle), 0, 0));
 
         let pos = startCF.PointToWorldSpace(new Vector3(2, 3, this.BackOffset));
-        let look = startCF.PointToWorldSpace(new Vector3(2, 2, -FarDistance));
+        let look = startCF.PointToWorldSpace(new Vector3(2, 2, -OneKM));
 
         this._camera.CFrame = CFrame.lookAt(pos, look);
     }
@@ -152,7 +152,7 @@ class GroundController extends BaseController {
     private FacingUpdate() {
         let lookingCF = CFrame.lookAt(
             this._humanoidRoot.Position,
-            this._camera.CFrame.PointToWorldSpace(new Vector3(0, 0, -FarDistance)));
+            this._camera.CFrame.PointToWorldSpace(new Vector3(0, 0, -OneKM)));
 
         let targetCF = CFrame.fromMatrix(
             this._humanoidRoot.Position,

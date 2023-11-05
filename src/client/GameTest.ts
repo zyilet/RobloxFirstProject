@@ -15,28 +15,31 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
-import { ContextActionService, Players, ReplicatedStorage, RunService, UserInputService, Workspace } from "@rbxts/services";
+import { ContextActionService, Players, ReplicatedStorage, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import Projectile from "shared/Projectile";
 import MovementSystem, { MovementType } from "./game/MovementSystem";
 import { Clack, Keyboard } from "@rbxts/clack";
 import GameObjLoader from "./game/GameObjLoader";
 import MovingCtrl from "./game/MovingCtrl";
-import { MeterToStud } from "shared/Constants";
+import { OneKM, MeterToStud } from "shared/Constants";
 import { Transform } from "shared/Transform";
 
-export default class GameTest {
+export default class GameTest
+{
 
-    public async Run(): Promise<void> {
+    public async Run(): Promise<void>
+    {
 
         // new MovingCtrl().Init();
 
         let humanoid = GameObjLoader.GetInstance().GetHumanoid();
         let root = GameObjLoader.GetInstance().GetHumanoidRoot();
+        let attachment = GameObjLoader.GetInstance().GetHumanoidRootAttachment();
         let keyboard = new Keyboard();
         let camera = GameObjLoader.GetInstance().GetCurrentCamera();
         let speed = 10;
 
-        Transform.DrawLine(() => root.Position, () => new Vector3(0, MeterToStud(2), 0));
+        this.Fly();
 
         // let wFlag = false;
 
@@ -60,7 +63,31 @@ export default class GameTest {
         //     }
         // })
 
-        // MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+        MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+
+        UserInputService.InputBegan.Connect((input, processed) =>
+        {
+            if (input.UserInputType === Enum.UserInputType.MouseButton1)
+            {
+                let ray = camera.ViewportPointToRay(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2);
+                let dir = ray.Direction.Unit.mul(OneKM);
+
+                let endPos = Transform.PointLocalToWorld(camera.CFrame, new Vector3(0, 0, -MeterToStud(100)));
+                let startPos = root.CFrame.Position;
+                let drawHandle = Transform.DrawLine(() => startPos, () => endPos);
+                let timer = 0;
+                let runHandle = RunService.Heartbeat.Connect(dt =>
+                {
+                    timer += dt
+                    if (timer >= 0.5)
+                    {
+                        runHandle.Disconnect();
+                        drawHandle();
+                    }
+                })
+
+            }
+        })
 
         // UserInputService.InputBegan.Connect((i, p) => {
         //     if (i.KeyCode === Enum.KeyCode.G) {
@@ -180,15 +207,130 @@ export default class GameTest {
         // })
     }
 
+    public Fly()
+    {
+        let hoverAnimID = "rbxassetid://15258521332"
+        let flyAnimID = "rbxassetid://15258519734"
+
+        let hoverAnim = new Instance("Animation");
+        hoverAnim.AnimationId = hoverAnimID;
+        let flyAnim = new Instance("Animation");
+        flyAnim.AnimationId = flyAnimID
+
+        let isFlying = false;
+        let humanoid = GameObjLoader.GetInstance().GetHumanoid();
+        let char = GameObjLoader.GetInstance().GetCharacter();
+        let root = GameObjLoader.GetInstance().GetHumanoidRoot();
+        let animator = humanoid.WaitForChild("Animator") as Animator;
+        let camera = GameObjLoader.GetInstance().GetCurrentCamera()
+        let frictionOringin = root.Friction;
+
+        let bodyVelocity = new Instance("BodyVelocity", char)
+        let bodyGyro = new Instance("BodyGyro", char)
+        bodyGyro.MaxTorque = Vector3.one.mul(10000)
+        bodyGyro.P = 10000;
+
+        let hover = animator.LoadAnimation(hoverAnim);
+        let fly = animator.LoadAnimation(flyAnim);
+
+        let getFlyDir = () =>
+        {
+            if (humanoid.MoveDirection === Vector3.zero)
+            {
+                return humanoid.MoveDirection;
+            }
+
+            let cameraPos = camera.CFrame.Position;
+            let cameraLookExcludeY = new Vector3(camera.CFrame.LookVector.X, 0, camera.CFrame.LookVector.Z);
+
+            let pos = new CFrame(cameraPos, cameraPos.add(cameraLookExcludeY)).VectorToObjectSpace(humanoid.MoveDirection);
+            let dir = (camera.CFrame.mul(new CFrame(pos))).Position.sub(camera.CFrame.Position);
+
+            if (dir === new Vector3())
+            {
+                return dir
+            }
+            else
+            {
+                return dir.Unit
+            }
+        }
+
+        RunService.RenderStepped.Connect(() =>
+        {
+            if (!char)
+            {
+                return
+            }
+            if (!isFlying)
+            {
+                return
+            }
+            bodyGyro.CFrame = camera.CFrame;
+            humanoid.ChangeState(Enum.HumanoidStateType.Flying)
+            TweenService.Create(bodyVelocity, new TweenInfo(0.3), { Velocity: getFlyDir().mul(MeterToStud(20)) }).Play();
+        })
+
+
+        UserInputService.InputBegan.Connect((input, processed) =>
+        {
+            if (processed)
+            {
+                return;
+            }
+            if (input.KeyCode !== Enum.KeyCode.Space)
+            {
+                return;
+            }
+
+            if (humanoid.GetState() !== Enum.HumanoidStateType.Freefall && humanoid.GetState() !== Enum.HumanoidStateType.Flying)
+            {
+                return;
+            }
+
+            if (isFlying)
+            {
+                //切换成地面状态
+                isFlying = false;
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Running, true);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Climbing, true);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.FallingDown, true);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Freefall, true);
+                humanoid.ChangeState(Enum.HumanoidStateType.Running);
+                root.Friction = frictionOringin;
+                bodyVelocity.Parent = char;
+                bodyGyro.Parent = char;
+                hover.Stop()
+                fly.Stop();
+            }
+            else
+            {
+                //切换为飞行状态
+                isFlying = true;
+                hover.Play(0.1, 1, 1);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Running, false);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Climbing, false);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.FallingDown, false);
+                humanoid.SetStateEnabled(Enum.HumanoidStateType.Freefall, false);
+                humanoid.ChangeState(Enum.HumanoidStateType.Flying);
+                root.Friction = 0;
+                bodyVelocity.Parent = root;
+                bodyGyro.Parent = root;
+            }
+        })
+    }
+
 }
 
-function offsetCamera() {
+function offsetCamera()
+{
 
     let char: Model;
     Players.LocalPlayer.CharacterAdded.Connect(c => char = c);
     let camera = Workspace.CurrentCamera;
 
-    RunService.RenderStepped.Connect(dt => {
+    RunService.RenderStepped.Connect(dt =>
+    {
         // if (!camera) return;
         // if (char) {
         //     const head = char.FindFirstChild("Head") as Part;
@@ -201,7 +343,8 @@ function offsetCamera() {
         let head = Players.LocalPlayer.Character?.FindFirstChild("Head") as MeshPart;
         let camera = Workspace.CurrentCamera;
 
-        if (root && camera && head) {
+        if (root && camera && head)
+        {
             print(root.CFrame.LookVector)
 
             let lookPosition = root.CFrame.mul(new CFrame(new Vector3(2, 2, 0))).Position;
@@ -212,7 +355,8 @@ function offsetCamera() {
     })
 }
 
-class FireBall {
+class FireBall
+{
 
     private _model?: Part;
     private _speed: number = 200;
@@ -240,14 +384,17 @@ class FireBall {
     //     this._model.Parent = game.Workspace;
     // }
 
-    constructor() {
+    constructor()
+    {
         this._model = new Instance("Part");
         this._model.CFrame = (Players.LocalPlayer.Character?.FindFirstChild("Head") as MeshPart).CFrame;
         this._model.CFrame = this._model.CFrame.mul(new CFrame(new Vector3(0, 0, -3)));
         this._model.Anchored = true;
 
-        RunService.Heartbeat.Connect(dt => {
-            if (this._model === undefined) {
+        RunService.Heartbeat.Connect(dt =>
+        {
+            if (this._model === undefined)
+            {
                 return;
             }
 
@@ -257,7 +404,8 @@ class FireBall {
 
             const region = new Region3(Vector3.zero, Vector3.one.mul(2));
             let result = Workspace.Spherecast(this._model.Position, 2, Vector3.zero)
-            if (result) {
+            if (result)
+            {
                 print("检测到其他物体")
                 print(result.Instance.Name)
             }
@@ -265,4 +413,6 @@ class FireBall {
         })
         this._model.Parent = game.Workspace;
     }
+
+
 }

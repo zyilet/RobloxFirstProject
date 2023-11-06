@@ -12,8 +12,14 @@
 	"eslint.run": "onType",
 	"eslint.format.enable": true,
 	"cSpell.words": [
+		"endregion",
+		"Freefall",
 		"Raycast",
+		"rbxassetid",
+		"rbxts",
+		"roact",
 		"roblox",
-		"Scriptable"
+		"Scriptable",
+		"Spherecast"
 	]
 }

@@ -2,12 +2,13 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-02 11:57:18
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-02 14:08:57
+ * @LastEditTime: 2023-11-06 09:52:48
  * @FilePath: \RobloxFirstProject\src\shared\Projectile.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
-import { Debris, RunService, Workspace } from "@rbxts/services";
+import { Debris, RunService, TweenService, Workspace } from "@rbxts/services";
+import { MeterToStud } from "./Constants";
 
 export default class Projectile {
 
@@ -36,6 +37,9 @@ export default class Projectile {
         let rayResult: RaycastResult | undefined;
         let found = false;
 
+
+        let part = new Instance("Part");
+
         let connect = RunService.Heartbeat.Connect(dt => {
 
             if (found) return;
@@ -52,16 +56,17 @@ export default class Projectile {
             curPos = nextPos;
 
             //创建轨迹
-            let part = new Instance("Part");
-            part.Size = Vector3.one.mul(0.5);
+            // let part = new Instance("Part");
+            part.Size = Vector3.one.mul(MeterToStud(1));
+            part.CastShadow = false;
             part.Position = nextPos;
             part.Anchored = true;
             part.CanCollide = false;
             part.Material = Enum.Material.Neon;
-            part.Color = new Color3(0, 1, 1);
+            part.Color = new Color3(1, 0, 0);
             part.Shape = Enum.PartType.Ball;
             part.Parent = Workspace;
-            Debris.AddItem(part, 0.5);
+            // Debris.AddItem(part, 0.5);
 
             if (rayResult || t > this._survival) {
                 found = true;
@@ -76,6 +81,14 @@ export default class Projectile {
 
         if (rayResult) {
             print(rayResult.Instance.Name)
+
+            let tween = TweenService.Create(part, new TweenInfo(0.2), { Size: Vector3.one.mul(MeterToStud(5)), Transparency: 0 });
+            tween.Play()
+            wait(0.2);
+            tween.Cancel();
+            part.Destroy();
+        } else {
+            part.Destroy();
         }
     }
 }

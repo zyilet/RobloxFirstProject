@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-01 14:46:19
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-04 17:36:07
+ * @LastEditTime: 2023-11-06 17:02:54
  * @FilePath: \RobloxFirstProject\src\client\GameTest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -33,13 +33,14 @@ export default class GameTest
         // new MovingCtrl().Init();
 
         let humanoid = GameObjLoader.GetInstance().GetHumanoid();
+        let char = GameObjLoader.GetInstance().GetCharacter();
         let root = GameObjLoader.GetInstance().GetHumanoidRoot();
         let attachment = GameObjLoader.GetInstance().GetHumanoidRootAttachment();
         let keyboard = new Keyboard();
         let camera = GameObjLoader.GetInstance().GetCurrentCamera();
         let speed = 10;
 
-        this.Fly();
+        // this.Fly();
 
         // let wFlag = false;
 
@@ -61,31 +62,35 @@ export default class GameTest
         //         root.CFrame = new CFrame(targetPos)
 
         //     }
-        // })
+        // // })
 
-        MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
+        // MovementSystem.GetInstance().SetMovementType(MovementType.Ground);
 
         UserInputService.InputBegan.Connect((input, processed) =>
         {
             if (input.UserInputType === Enum.UserInputType.MouseButton1)
             {
-                let ray = camera.ViewportPointToRay(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2);
-                let dir = ray.Direction.Unit.mul(OneKM);
 
-                let endPos = Transform.PointLocalToWorld(camera.CFrame, new Vector3(0, 0, -MeterToStud(100)));
-                let startPos = root.CFrame.Position;
-                let drawHandle = Transform.DrawLine(() => startPos, () => endPos);
-                let timer = 0;
-                let runHandle = RunService.Heartbeat.Connect(dt =>
+                if (processed)
                 {
-                    timer += dt
-                    if (timer >= 0.5)
-                    {
-                        runHandle.Disconnect();
-                        drawHandle();
-                    }
-                })
+                    return;
+                }
+                // let ray = camera.ViewportPointToRay(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2);
+                // let dir = ray.Direction.Unit.mul(OneKM);
 
+                // let endPos = Transform.PointLocalToWorld(camera.CFrame, new Vector3(0, 0, -MeterToStud(100)));
+                // let startPos = (char.WaitForChild("RightHand") as Part).CFrame.Position;
+                // let drawHandle = Transform.DrawLine(() => startPos, () => endPos);
+                // let timer = 0;
+                // let runHandle = RunService.Heartbeat.Connect(dt => {
+                //     timer += dt
+                //     if (timer >= 0.2) {
+                //         runHandle.Disconnect();
+                //         drawHandle();
+                //     }
+                // })
+
+                new Projectile(1, 3, char).Cast(root.CFrame.Position, Transform.PointLocalToWorld(camera.CFrame, new Vector3(0, 0, -MeterToStud(100))), MeterToStud(10));
             }
         })
 

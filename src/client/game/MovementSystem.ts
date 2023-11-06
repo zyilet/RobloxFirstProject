@@ -4,23 +4,27 @@ import { OneKM } from "shared/Constants";
 import { Keyboard } from "@rbxts/clack";
 
 //运动模式类型
-export enum MovementType {
+export enum MovementType
+{
     Default,
     Ground,
     Air,
 }
 
-export default class MovementSystem {
+export default class MovementSystem
+{
 
     //单例
     private static _instance: MovementSystem;
-    public static GetInstance() {
+    public static GetInstance()
+    {
         return this._instance ??= new MovementSystem();
     }
 
     private _movementController?: MovementController;
 
-    public SetMovementType(movementType: MovementType) {
+    public SetMovementType(movementType: MovementType)
+    {
 
         this._movementController?.Abolish();
 
@@ -35,12 +39,14 @@ export default class MovementSystem {
     }
 }
 
-interface MovementController {
+interface MovementController
+{
     Apply(): void;
     Abolish(): void;
 }
 
-abstract class BaseController implements MovementController {
+abstract class BaseController implements MovementController
+{
 
     abstract Apply(): void;
     abstract Abolish(): void;
@@ -58,7 +64,8 @@ abstract class BaseController implements MovementController {
     // }
 }
 
-class GroundController extends BaseController {
+class GroundController extends BaseController
+{
 
     private _cameraState = {
         OffsetX: 2,
@@ -76,7 +83,8 @@ class GroundController extends BaseController {
 
 
 
-    public Apply() {
+    public Apply()
+    {
         this._camera!.CameraType = Enum.CameraType.Scriptable;
         UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter;
         UserInputService.MouseIconEnabled = false;
@@ -96,19 +104,22 @@ class GroundController extends BaseController {
             () => this.CameraUpdate()
         );
 
-        let connect = RunService.Heartbeat.Connect(dt => {
+        let connect = RunService.Heartbeat.Connect(dt =>
+        {
             if (
                 this._keyboard.isKeyDownAllowProcessed(Enum.KeyCode.W) ||
                 this._keyboard.isKeyDownAllowProcessed(Enum.KeyCode.S) ||
                 this._keyboard.isKeyDownAllowProcessed(Enum.KeyCode.A) ||
-                this._keyboard.isKeyDownAllowProcessed(Enum.KeyCode.D)) {
+                this._keyboard.isKeyDownAllowProcessed(Enum.KeyCode.D))
+            {
 
                 this.FacingUpdate();
             }
         })
     }
 
-    public Abolish(): void {
+    public Abolish(): void
+    {
         this._camera.CameraType = Enum.CameraType.Custom;
         UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
         UserInputService.MouseIconEnabled = true;
@@ -118,23 +129,27 @@ class GroundController extends BaseController {
         RunService.UnbindFromRenderStep("CameraUpdate");
     }
 
-    private PlayerInput(actionName: string, inputState: Enum.UserInputState, inputObj: InputObject) {
-        if (inputState === Enum.UserInputState.Change) {
+    private PlayerInput(actionName: string, inputState: Enum.UserInputState, inputObj: InputObject)
+    {
+        if (inputState === Enum.UserInputState.Change)
+        {
             let delta = inputObj.Delta.mul(0.1);
             let dx = -delta.X;
             let dy = this.FlipY ? -delta.Y : delta.Y;
             this.AxisYAngle = this.AxisYAngle + dx;
-            this.AxisXAngle = math.clamp(this.AxisXAngle + dy, -90, 90);
+            this.AxisXAngle = math.clamp(this.AxisXAngle + dy, -75, 75);
         }
 
-        if (inputObj.UserInputType === Enum.UserInputType.MouseWheel) {
+        if (inputObj.UserInputType === Enum.UserInputType.MouseWheel)
+        {
             let dz = -inputObj.Position.Z;
             this.BackOffset = math.clamp(this.BackOffset + dz, 2, 10);
         }
     }
 
     //更新相机
-    private CameraUpdate() {
+    private CameraUpdate()
+    {
         UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter;
 
         let startCF = new CFrame(this._humanoidRoot.CFrame.Position)
@@ -149,7 +164,8 @@ class GroundController extends BaseController {
 
     private _cfTween: Tween | undefined;
     //更新朝向
-    private FacingUpdate() {
+    private FacingUpdate()
+    {
         let lookingCF = CFrame.lookAt(
             this._humanoidRoot.Position,
             this._camera.CFrame.PointToWorldSpace(new Vector3(0, 0, -OneKM)));
@@ -170,22 +186,28 @@ class GroundController extends BaseController {
 }
 
 
-class AirController implements MovementController {
+class AirController implements MovementController
+{
 
-    Apply(): void {
+    Apply(): void
+    {
 
     }
-    Abolish(): void {
+    Abolish(): void
+    {
 
     }
 }
 
-class DefaultController implements MovementController {
+class DefaultController implements MovementController
+{
 
-    Apply(): void {
+    Apply(): void
+    {
 
     }
-    Abolish(): void {
+    Abolish(): void
+    {
 
     }
 }

@@ -2,10 +2,12 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-02 17:37:16
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-02 17:37:45
+ * @LastEditTime: 2023-11-06 10:03:49
  * @FilePath: \RobloxFirstProject\src\shared\Constants.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+
+import { Players, Workspace } from "@rbxts/services";
 
 //1000米
 export const OneKM = 100 / 28 * 1000;
@@ -18,4 +20,37 @@ export function MeterToStud(meter: number) {
 
 export function AngleToRad(angle: number) {
     return math.rad(angle);
+}
+
+export function WaitCharacter() {
+    let character = Players.LocalPlayer.Character;
+    while (!character) {
+        wait();
+        character = Players.LocalPlayer.Character;
+    }
+    return character;
+}
+
+export function WaitCurrentCamera() {
+    let camera = Workspace.CurrentCamera;
+    while (!camera) {
+        wait();
+        camera = Workspace.CurrentCamera;
+    }
+    return camera;
+}
+
+export function WaitHumanoid() {
+    let character = WaitCharacter();
+    return character.WaitForChild("Humanoid") as Humanoid;
+}
+
+export function WaitHumanoidRoot() {
+    let character = WaitCharacter();
+    return character.WaitForChild("HumanoidRootPart") as Part;
+}
+
+export function WaitHumanoidRootAttachment() {
+    let root = WaitHumanoidRoot();
+    return root.WaitForChild("RootAttachment") as Attachment;
 }

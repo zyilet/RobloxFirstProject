@@ -90,7 +90,7 @@ export default class GameTest
                 //     }
                 // })
 
-                new Projectile(1, 3, char).Cast(root.CFrame.Position, Transform.PointLocalToWorld(camera.CFrame, new Vector3(0, 0, -MeterToStud(100))), MeterToStud(10));
+                
             }
         })
 

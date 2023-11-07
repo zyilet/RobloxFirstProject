@@ -1,6 +1,9 @@
-import { Keyboard } from "@rbxts/clack";
+import { Keyboard, Mouse } from "@rbxts/clack";
 import { MeterToStud, OneKM, WaitCharacter, WaitCurrentCamera, WaitHumanoid, WaitHumanoidRoot } from "shared/Constants";
 import { ContextActionService, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
+import Projectile from "shared/Projectile";
+import { Transform } from "shared/Transform";
+import { KnitClient } from "@rbxts/knit";
 
 enum MoveStateType
 {
@@ -95,12 +98,25 @@ export class ControlSystem
         )
     }
 
+    private atkDuration = 0.1;
+    private mouse = new Mouse();
     public Update(dt: number)
     {
-        this.CheckCursor();
+        this.atkDuration -= dt;
+        if (this.mouse.isButtonDown(Enum.UserInputType.MouseButton1))
+        {
+            if (this.atkDuration <= 0)
+            {
+                this.atkDuration = 0.1;
 
-        this._keyboard = this._keyboard!;
-        this._bodyGyro!.CFrame = this._camera!.CFrame;
+                // new Projectile(1, 3, this._character!).Cast(this._rootPart!.CFrame.Position, Transform.PointLocalToWorld(this._camera!.CFrame, new Vector3(0, 0, -MeterToStud(100))), MeterToStud(10));
+                KnitClient.GetService("ProjectileService").CastProjectile.Fire(this._rootPart!.CFrame.Position, Transform.PointLocalToWorld(this._camera!.CFrame, new Vector3(0, 0, -MeterToStud(100))));
+            }
+        }
+
+        this.CheckCursor()
+        this._keyboard = this._keyboard!
+        this._bodyGyro!.CFrame = this._camera!.CFrame
 
         //按下跳跃键时监控时长
         if (this._keyboard.isKeyDown(Enum.KeyCode.Space))

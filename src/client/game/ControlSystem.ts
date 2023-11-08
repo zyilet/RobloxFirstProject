@@ -291,21 +291,4 @@ export class ControlSystem
 
         this._camera.CFrame = CFrame.lookAt(pos, look);
     }
-
-    // //更新角色朝向
-    // private UpdatePlayerFacing()
-    // {
-    //     let lookingCF = CFrame.lookAt(
-    //         this._rootPart!.Position,
-    //         this._camera!.CFrame.PointToWorldSpace(new Vector3(0, 0, -OneKM)));
-
-    //     let targetCF = CFrame.fromMatrix(
-    //         this._rootPart!.Position,
-    //         lookingCF.XVector,
-    //         this._rootPart!.CFrame.YVector,
-    //     );
-
-    //     let ti = new TweenInfo(0.1, Enum.EasingStyle.Linear);
-    //     TweenService.Create(this._rootPart!, ti, { CFrame: targetCF }).Play();
-    // }
 }

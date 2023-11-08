@@ -16,7 +16,7 @@
  */
 import { KnitClient as Knit } from "@rbxts/knit";
 import {ReplicatedStorage, RunService } from "@rbxts/services";
-import { ControlSystem } from "./game/ControlSystem";
+import { ControlSystem } from "./game/ControlManager";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);

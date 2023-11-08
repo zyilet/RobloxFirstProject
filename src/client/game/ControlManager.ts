@@ -1,7 +1,6 @@
 import { Keyboard, Mouse } from "@rbxts/clack";
 import { MeterToStud, OneKM, WaitCharacter, WaitCurrentCamera, WaitHumanoid, WaitHumanoidRoot } from "shared/Constants";
 import { ContextActionService, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
-import Projectile from "shared/Projectile";
 import { Transform } from "shared/Transform";
 import { KnitClient } from "@rbxts/knit";
 

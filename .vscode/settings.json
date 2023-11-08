@@ -12,8 +12,10 @@
 	"eslint.run": "onType",
 	"eslint.format.enable": true,
 	"cSpell.words": [
+		"Attackable",
 		"endregion",
 		"Freefall",
+		"pcall",
 		"Raycast",
 		"rbxassetid",
 		"rbxts",

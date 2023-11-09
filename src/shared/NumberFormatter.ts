@@ -6,10 +6,12 @@ export default class NumberFormatter
 
     public static Format(number: number, precision: number = 1)
     {
-        number = 1.33e32;
+        number = 2138;
 
         let numberStr = tostring(number)
         let result = numberStr.find("+")[0] ? this.ScientificFormat(numberStr) : this.NumberFormat(numberStr);
+
+        print(result)
 
         // // 1,000 => 1k 1,100 => 1.1k
         // // 1,000,000 => 1M
@@ -54,7 +56,28 @@ export default class NumberFormatter
 
     private static NumberFormat(number: string)
     {
-        print(number)
+        //数字字符串长度
+        let numberLength = number.size();
+        //余数
+        let remainder = numberLength % this._unitLength;
+        //商
+        let divisionResult = math.floor(numberLength / this._unitLength)
+        if (remainder === 0 && divisionResult !== 0)
+            divisionResult -= 1;
+        //如果不足1000，就返回原始数字
+        if (divisionResult === 0)
+        {
+            return number;
+        }
+        let result = ""
+        //显示的整数数字
+        let showLength = remainder === 0 ? this._unitLength : remainder;
+        result = number.sub(1, showLength);
+        //显示的小数数字
+        let showPrecision = number.sub(showLength + 1, showLength + this._precisionLength)
+        result += "." + showPrecision
+        result += this._units[divisionResult - 1];
+        return result
     }
 
     private static ScientificFormat(number: string)
@@ -71,14 +94,23 @@ export default class NumberFormatter
             return number;
         }
 
-        number = number.gsub(".", "")[0]
-
+        number = number.gsub("%.", "")[0];
+        number = number.sub(0, number.find("e")[0]! - 1);
         let result = ""
         //if number == 9.876e32 then rightOffset == 2
         let rightOffset = index - unitIndex * this._unitLength;
+        //整数部分
+        result = number.sub(1, 1 + rightOffset)
+        //小数部分
+        let t = number.sub(rightOffset + 2, rightOffset + 2)
+        if (t !== "")
+        {
+            result += "." + t
+        }
+        //单位
+        result += this._units[unitIndex - 1];
 
-
-        print(number)
-        print(number.sub(start! + 1))
+        print(result)
+        return result;
     }
 }

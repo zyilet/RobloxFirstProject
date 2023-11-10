@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-02 17:37:16
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-08 13:54:48
+ * @LastEditTime: 2023-11-10 14:04:43
  * @FilePath: \RobloxFirstProject\src\shared\Constants.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -71,4 +71,10 @@ export function WaitHumanoidRootAttachment()
 export function ToAssetId(id: string)
 {
     return `rbxassetid://${id}`
+}
+
+export function GetReticle()
+{
+    let LocalPlayer = Players.LocalPlayer;
+    return LocalPlayer.WaitForChild("PlayerGui").WaitForChild("ReticlePanel").WaitForChild("Reticle") as Frame;
 }

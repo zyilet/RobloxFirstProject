@@ -1,5 +1,5 @@
 import { Keyboard, Mouse } from "@rbxts/clack";
-import { MeterToStud, OneKM, WaitCharacter, WaitCurrentCamera, WaitHumanoid, WaitHumanoidRoot } from "shared/Constants";
+import { GetReticle, MeterToStud, OneKM, WaitCharacter, WaitCurrentCamera, WaitHumanoid, WaitHumanoidRoot } from "shared/Constants";
 import { ContextActionService, RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
 import { Transform } from "shared/Transform";
 import { KnitClient } from "@rbxts/knit";
@@ -12,6 +12,12 @@ enum MoveStateType
 
 export class ControlSystem
 {
+    private static _instance: ControlSystem;
+    public static GetInstance()
+    {
+        return this._instance ??= new ControlSystem();
+    }
+
     private _hoverAnimId = "rbxassetid://15258521332"
     private _flySpeed = 20;
 
@@ -104,12 +110,23 @@ export class ControlSystem
         this.atkDuration -= dt;
         if (this.mouse.isButtonDown(Enum.UserInputType.MouseButton1))
         {
+            this.GetReticleScreenPosition();
             if (this.atkDuration <= 0)
             {
                 this.atkDuration = 0.1;
 
+                let uiPos = UserInputService.GetMouseLocation()
+                let ray = this._camera?.ViewportPointToRay(uiPos.X, uiPos.Y)
+                let dest = ray!.Direction.mul(OneKM)
+                let rayResult = Workspace.Raycast(ray!.Origin, dest)
+                if (rayResult?.Instance)
+                {
+                    print(rayResult.Instance.Name);
+                    dest = rayResult.Position;
+                }
                 // new Projectile(1, 3, this._character!).Cast(this._rootPart!.CFrame.Position, Transform.PointLocalToWorld(this._camera!.CFrame, new Vector3(0, 0, -MeterToStud(100))), MeterToStud(10));
-                KnitClient.GetService("ProjectileService").CastProjectile.Fire(this._rootPart!.CFrame.Position, Transform.PointLocalToWorld(this._camera!.CFrame, new Vector3(0, 0, -MeterToStud(100))));
+                KnitClient.GetService("ProjectileService").CastProjectile.Fire(this._rootPart!.CFrame.Position, dest);
+                KnitClient.GetService("PlayerDataService").AddAttackValue.Fire();
             }
         }
 
@@ -289,5 +306,11 @@ export class ControlSystem
         let look = startCF.PointToWorldSpace(new Vector3(2, 2, -OneKM));
 
         this._camera.CFrame = CFrame.lookAt(pos, look);
+    }
+
+    //获得准心屏幕位置
+    private GetReticleScreenPosition()
+    {
+        let reticle = GetReticle();
     }
 }

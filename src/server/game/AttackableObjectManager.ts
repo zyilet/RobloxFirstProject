@@ -31,6 +31,11 @@ export class AttackableObjectManager
         return this._modelToObj.get(model);
     }
 
+    public RemoveObj(model: Model)
+    {
+        this._modelToObj.delete(model);
+    }
+
     public StartSpawn()
     {
         let obj = new TestAttackableObject();
@@ -54,6 +59,7 @@ export abstract class AttackableObject
     protected CurHP: number = 0;
 
     public abstract OnBeAttacked(damage: number): void;
+    public abstract OnDead(): void;
 }
 
 export class TestAttackableObject extends AttackableObject
@@ -75,6 +81,17 @@ export class TestAttackableObject extends AttackableObject
 
         this.CurHP = math.max(0, this.CurHP - damage);
         this._HpBarImg.Size = new UDim2(this.CurHP / this.MaxHP, 0, 1, 0)
+
+        if (this.CurHP <= 0)
+        {
+            AttackableObjectManager.GetInstance().RemoveObj(this._model);
+            this._model!.Destroy();
+        }
+    }
+
+    public OnDead(): void
+    {
+        this._model?.Destroy();
     }
 
     public Init()

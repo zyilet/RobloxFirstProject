@@ -10,6 +10,7 @@
 import { Debris, RunService, TweenService, Workspace } from "@rbxts/services";
 import { MeterToStud, Tags } from "../../shared/Constants";
 import { AttackableObject, AttackableObjectManager, TestAttackableObject } from "./AttackableObjectManager";
+import { KnitServer } from "@rbxts/knit";
 
 export default class Projectile
 {
@@ -40,7 +41,7 @@ export default class Projectile
         let curPos = start;
         let rayResult: RaycastResult | undefined;
         let found = false;
-        
+
 
 
         let part = new Instance("Part");
@@ -94,7 +95,7 @@ export default class Projectile
             {
 
                 let obj = AttackableObjectManager.GetInstance().GetObj(rayResult.Instance.Parent as Model);
-                obj?.OnBeAttacked(1);
+                obj?.OnBeAttacked(KnitServer.GetService("PlayerDataService").Client.AttackValue.Get());
             }
         }
 

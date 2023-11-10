@@ -6,56 +6,49 @@ export default class NumberFormatter
 
     public static Format(number: number, precision: number = 1)
     {
-        number = 2138;
-
         let numberStr = tostring(number)
-        let result = numberStr.find("+")[0] ? this.ScientificFormat(numberStr) : this.NumberFormat(numberStr);
 
-        print(result)
+        if (number < 1000)
+        {
+            return this.SimpleNumberFormat(numberStr)
+        }
+        else if (numberStr.find("+")[0])
+        {
+            return this.ScientificFormat(numberStr);
+        }
+        else
+        {
+            return this.NumberFormat(numberStr);
+        }
+    }
 
-        // // 1,000 => 1k 1,100 => 1.1k
-        // // 1,000,000 => 1M
-        // let result = "";
-        // //数字字符串
-        // let numberStr = string.format("%f", number)
-        // //数字字符串长度
-        // let numberLength = numberStr.size();
-        // //余数
-        // let remainder = numberLength % this._unitLength;
-        // //商
-        // let divisionResult = math.floor(numberLength / this._unitLength)
-        // print(numberLength / this._unitLength)
-        // if (remainder === 0 && divisionResult !== 0)
-        //     divisionResult -= 1;
-        // //如果不足1000，就返回原始数字
-        // if (divisionResult === 0)
-        // {
-        //     return numberStr;
-        // }
-        // //显示的整数数字
-        // let showLength = remainder === 0 ? this._unitLength : remainder;
-        // result = numberStr.sub(1, showLength);
-        // //显示的小数数字
-        // let showPrecision = numberStr.sub(showLength + 1, showLength + this._precisionLength)
-        // result += "." + showPrecision
-
-        // //如果单位超过最大预设单位，返回科学计数法
-        // if (divisionResult >= this._units.size())
-        // {
-        //     result += "E" + divisionResult * this._unitLength;
-        // }
-        // else
-        // {
-        //     result += this._units[divisionResult];
-        // }
-
-        // print(divisionResult, this._units[divisionResult])
-
-        // return result;
+    /**
+     * @description: 小于1000的数直接返回一个精度
+     * @return {*}
+     */
+    private static SimpleNumberFormat(number: string)
+    {
+        let dotIndex = number.find("%.")[0];
+        if (dotIndex)
+        {
+            return number.sub(1, dotIndex + 1);
+        }
+        else
+        {
+            return number + ".0"
+        }
     }
 
     private static NumberFormat(number: string)
     {
+        //清除小数位
+        {
+            let dotIndex = number.find("%.")[0];
+            if (dotIndex)
+            {
+                number = number.sub(1, dotIndex - 1);
+            }
+        }
         //数字字符串长度
         let numberLength = number.size();
         //余数
@@ -90,8 +83,12 @@ export default class NumberFormatter
         //如果超出了预定义的单位最大范围，就显示科学计数法
         if (unitIndex > this._units.size())
         {
-            print(number)
-            return number;
+            let dotIndex = number.find("%.")[0]
+            if (dotIndex)
+            {
+                number = number.sub(1, dotIndex + 1);
+            }
+            return number + `×10^${index}`
         }
 
         number = number.gsub("%.", "")[0];

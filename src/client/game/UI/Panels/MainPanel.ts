@@ -2,6 +2,7 @@ import { KnitClient } from "@rbxts/knit";
 import { BasePanel } from "./BasePanel";
 import NumberFormatter from "shared/NumberFormatter";
 import { Connection } from "@rbxts/knit/Knit/Util/Signal";
+import { Players } from "@rbxts/services";
 
 export class MainPanel extends BasePanel
 {
@@ -29,11 +30,11 @@ export class MainPanel extends BasePanel
 
     private OnShow()
     {
-        let remoteAtk = KnitClient.GetService("PlayerDataService").AttackValue;
+        let playerDataService = KnitClient.GetService("PlayerDataService");
 
-        this._text!.Text = NumberFormatter.Format(remoteAtk.Get());
+        this._text!.Text = NumberFormatter.Format(playerDataService.GetAttack());
 
-        this.connection = remoteAtk.Changed.Connect(value => this._text!.Text = NumberFormatter.Format(value));
+        this.connection = playerDataService.OnAttackChanged.Connect(value => this._text!.Text = NumberFormatter.Format(value));
     }
 
     private OnHide()

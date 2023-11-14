@@ -26,6 +26,7 @@
     "@rbxts/clack": "^3.1.1",
     "@rbxts/knit": "^0.0.21-alpha.0",
     "@rbxts/roact": "^1.4.4-ts.0",
-    "@rbxts/services": "^1.5.1"
+    "@rbxts/services": "^1.5.1",
+    "@types/node": "^20.9.0"
   }
 }

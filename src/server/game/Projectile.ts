@@ -2,14 +2,14 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-02 11:57:18
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-09 13:21:32
+ * @LastEditTime: 2023-11-14 15:34:51
  * @FilePath: \RobloxFirstProject\src\shared\Projectile.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
 import { Debris, RunService, TweenService, Workspace } from "@rbxts/services";
 import { MeterToStud, Tags } from "../../shared/Constants";
-import { AttackableObject, AttackableObjectManager, TestAttackableObject } from "./AttackableObjectManager";
+import { MonsterManager } from "./Monster/MonsterManager";
 import { KnitServer } from "@rbxts/knit";
 
 export default class Projectile
@@ -18,9 +18,11 @@ export default class Projectile
     private _gravity: number;
     private _survival: number;
     private _raycastParams: RaycastParams;
+    private _caster: Player;
 
-    constructor(gravity: number, survival: number, exclude: Instance)
+    constructor(gravity: number, survival: number, exclude: Instance, caster: Player)
     {
+        this._caster = caster;
         this._gravity = gravity;
         this._survival = survival;
         this._raycastParams = new RaycastParams();
@@ -93,9 +95,7 @@ export default class Projectile
         {
             if (rayResult.Instance.Parent?.HasTag(Tags.Attackable))
             {
-
-                let obj = AttackableObjectManager.GetInstance().GetObj(rayResult.Instance.Parent as Model);
-                obj?.OnBeAttacked(KnitServer.GetService("PlayerDataService").Client.AttackValue.Get());
+                MonsterManager.GetInstance().TakeDamage(rayResult.Instance.Parent as Model, this._caster)
             }
         }
 

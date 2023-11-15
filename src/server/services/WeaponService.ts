@@ -1,22 +1,27 @@
-// import { KnitServer as Knit } from "@rbxts/knit";
+import { KnitServer as Knit } from "@rbxts/knit";
 
-// declare global {
-//     interface KnitServices {
-//         WeaponService: typeof WeaponService;
-//     }
-// }
+declare global
+{
+    interface KnitServices
+    {
+        WeaponService: typeof WeaponService;
+    }
+}
 
-// const WeaponService = Knit.CreateService({
-//     Name: "WeaponService",
+const WeaponService = Knit.CreateService({
+    Name: "WeaponService",
 
-//     Client: {
-//     },
+    Client: {
+    },
 
-//     KnitInit() {
-//     },
+    KnitInit()
+    {
+    },
 
-//     KnitStart() {
-//     },
-// });
+    KnitStart()
+    {
+        
+    },
+});
 
-// export = WeaponService;
+export = WeaponService;

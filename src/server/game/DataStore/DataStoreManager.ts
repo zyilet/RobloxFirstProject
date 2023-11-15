@@ -50,7 +50,7 @@ export class DataStoreManager
 
     public Save(player: Player)
     {
-
+        
     }
 
     public SaveAll()

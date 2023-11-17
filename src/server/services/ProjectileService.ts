@@ -6,7 +6,7 @@
  * @FilePath: \RobloxFirstProject\src\server\services\ProjectileService.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { KnitServer as Knit, KnitServer, RemoteSignal } from "@rbxts/knit";
+import { KnitServer as Knit, RemoteSignal } from "@rbxts/knit";
 import { Workspace } from "@rbxts/services";
 import { MeterToStud } from "shared/Constants";
 import Projectile from "server/game/Projectile";

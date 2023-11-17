@@ -1,5 +1,6 @@
-import { KnitServer as Knit, RemoteProperty, RemoteSignal } from "@rbxts/knit";
+import { KnitServer as Knit, RemoteSignal } from "@rbxts/knit";
 import { DataStoreService, Players } from "@rbxts/services";
+import { GameDataManager } from "server/game/DataStore/GameDataManager";
 
 class PlayerData
 {
@@ -31,11 +32,16 @@ const PlayerDataService = Knit.CreateService(
 
             GetAttack(player: Player): number
             {
-                return this.Server.PlayersData.get(player.UserId)?.Attack ?? 0
+                return GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAttack()
             },
             GetGold(player: Player): number
             {
-                return this.Server.PlayersData.get(player.UserId)?.Gold ?? 0
+                return GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetGold()
+            },
+
+            ClearData(player: Player)
+            {
+                GameDataManager.GetInstance().GetPlayerDataAccessor(player).ResetData()
             }
         },
 
@@ -48,10 +54,14 @@ const PlayerDataService = Knit.CreateService(
 
             this.Client.AddAttackValue.Connect(player =>
             {
-                let playerData = this.PlayersData.get(player.UserId)!
-                playerData.Attack += 10;
+                let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player)
+                let curWeapon = accessor.GetCurEquipWeapon()
+                let curAttackValue = accessor.GetAttack()
+                let newAttackValue = curAttackValue + (curWeapon ? curWeapon.Strength : 1);
 
-                this.Client.OnAttackChanged.Fire(player, playerData.Attack)
+                accessor.SetAttack(newAttackValue)
+
+                this.Client.OnAttackChanged.Fire(player, newAttackValue)
             })
         },
 

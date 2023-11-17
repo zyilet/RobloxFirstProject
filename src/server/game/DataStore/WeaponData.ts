@@ -1,14 +1,20 @@
+import { HttpService } from "@rbxts/services";
+
 export class WeaponData
 {
     public AssetId: number;
+    public WeaponId: string;
     public Strength: number;
     public Quality: WeaponQuality;
+    public Price: number;
 
-    constructor(id: number, strength: number, quality: WeaponQuality)
+    constructor(assetId: number, strength: number, quality: WeaponQuality, price: number)
     {
-        this.AssetId = id;
+        this.AssetId = assetId;
+        this.WeaponId = HttpService.GenerateGUID(false);
         this.Strength = strength
         this.Quality = quality
+        this.Price = price
     }
 }
 

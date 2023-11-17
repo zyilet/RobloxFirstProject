@@ -1,5 +1,3 @@
-import { Players } from "@rbxts/services";
-
 export type MonsterConfig = {
     id: string,
     name: string,
@@ -15,7 +13,6 @@ export class MonsterConfigCollection
             name: "测试怪物1",
             hp: 1000,
             assetID: 15296980369,
-            
         }, {
             id: "测试怪物2",
             name: "测试怪物2",
@@ -29,7 +26,7 @@ export class MonsterConfigCollection
         return this._configs;
     }
 
-    public static GetConfigForId(id: string)
+    public static GetConfigById(id: string)
     {
         let config = this._configs.filter(config => config.id === id).pop();
         return config ? config : error("没有和传入id相匹配的配置数据")

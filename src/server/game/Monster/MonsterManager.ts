@@ -2,8 +2,8 @@ import { CollectionService, RunService } from "@rbxts/services";
 import { MonsterBase } from "./MonsterBase";
 import { Monster } from "./Monster";
 import { MonsterPositionInfo } from "./RefreshPositionInfo";
-import { MonsterConfigCollection } from "./MonsterConfigCollection";
 import { KnitServer } from "@rbxts/knit";
+import { MonsterConfigCollection } from "shared/GameConfig/MonsterConfig";
 /**
  * @description: 可被攻击对象管理器
  * @return {*}
@@ -49,7 +49,7 @@ export class MonsterManager
                 task.defer(() =>
                 {
                     let monster = new Monster();
-                    let model = monster.Init(MonsterConfigCollection.GetConfigForId(posInfo.monsterID), posInfo.cFrame)
+                    let model = monster.Init(MonsterConfigCollection.GetConfigById(posInfo.monsterID), posInfo.cFrame)
                     if (!model)
                     {
                         posInfo.posState = "Empty"

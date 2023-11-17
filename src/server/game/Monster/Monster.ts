@@ -1,7 +1,7 @@
 import { InsertService, Workspace } from "@rbxts/services";
 import { MonsterBase } from "./MonsterBase";
-import { MonsterConfig } from "./MonsterConfigCollection";
 import { MonsterHPBar } from "./MonsterHPBar";
+import { MonsterConfig } from "shared/GameConfig/MonsterConfig";
 
 
 export class Monster extends MonsterBase

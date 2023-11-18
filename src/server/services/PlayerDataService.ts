@@ -1,6 +1,7 @@
 import { KnitServer as Knit, RemoteSignal } from "@rbxts/knit";
 import { DataStoreService, Players } from "@rbxts/services";
 import { GameDataManager } from "server/game/DataStore/GameDataManager";
+import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
 
 class PlayerData
 {
@@ -55,9 +56,9 @@ const PlayerDataService = Knit.CreateService(
             this.Client.AddAttackValue.Connect(player =>
             {
                 let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player)
-                let curWeapon = accessor.GetCurEquipWeapon()
+                let curWeaponId = accessor.GetCurEquipWeaponId()
                 let curAttackValue = accessor.GetAttack()
-                let newAttackValue = curAttackValue + (curWeapon ? curWeapon.Strength : 1);
+                let newAttackValue = curAttackValue + (curWeaponId ? WeaponConfigCollection.GetConfigById(curWeaponId).strength : 1);
 
                 accessor.SetAttack(newAttackValue)
 
@@ -75,6 +76,19 @@ const PlayerDataService = Knit.CreateService(
             return this.PlayersData.get(player.UserId)!.Attack;
         },
 
+        AddAttack(player: Player, value: number)
+        {
+            let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player);
+            accessor.AddAttack(value);
+            this.Client.OnAttackChanged.Fire(player, accessor.GetAttack())
+        },
+
+        AddGold(player: Player, value: number)
+        {
+            let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player);
+            accessor.AddGold(value)
+            this.Client.OnGoldChanged.Fire(player, accessor.GetGold())
+        },
         OnPlayerEntryGame(player: Player)
         {
             //获取玩家的存储对象

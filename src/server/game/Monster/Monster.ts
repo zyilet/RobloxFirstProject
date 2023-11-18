@@ -42,13 +42,14 @@ export class Monster extends MonsterBase
         //TODO::创建奖励
     }
 
-    public Init(config: MonsterConfig, cf: CFrame)
+    public Init(config: MonsterConfig, cf: CFrame, id: string)
     {
         if (!this.CheckLoadModel(config))
         {
             return undefined;
         }
 
+        this.Id = id;
         this._model = Monster._modelCache.get(config.id)!.Clone()
         this._root = this._model.WaitForChild("Model") as Part
         this._hpBar = new MonsterHPBar(this._model.WaitForChild("HPBar") as BillboardGui)

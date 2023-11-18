@@ -1,5 +1,4 @@
 import { PlayerData } from "./PlayerData";
-import { WeaponData } from "./WeaponData";
 
 export class PlayerDataAccessor
 {
@@ -51,6 +50,11 @@ export class PlayerDataAccessor
         this._data.Attack = value;
     }
 
+    public AddAttack(value: number)
+    {
+        this._data.Attack += value;
+    }
+
     public GetGold()
     {
         return this._data.Gold;
@@ -61,16 +65,14 @@ export class PlayerDataAccessor
         this._data.Gold = value;
     }
 
-    public GetCurEquipWeapon()
+    public AddGold(value: number)
     {
-        let curWeaponId = this._data.EquipWeaponId;
-        if (!curWeaponId)
-        {
-            return undefined;
-        }
+        this._data.Gold += value;
+    }
 
-        let weapon = this._data.Weapons.find(ele => ele.WeaponId === curWeaponId);
-        return weapon ?? error("当前装备的武器id在武器存储数据中不存在")
+    public GetCurEquipWeaponId()
+    {
+        return this._data.EquipWeaponId
     }
 
     public GetAllWeapon()
@@ -87,9 +89,9 @@ export class PlayerDataAccessor
      * @description: 向背包中添加武器
      * @return {*}
      */
-    public AddWeapon(weapon: WeaponData)
+    public AddWeapon(weaponId: string)
     {
-        this._data.Weapons.push(weapon);
+        this._data.Weapons.push(weaponId);
     }
     /**
      * @description: 从背包中移除武器
@@ -99,10 +101,11 @@ export class PlayerDataAccessor
     {
         for (let i = this._data.Weapons.size() - 1; i >= 0; i--)
         {
-            let weapon = this._data.Weapons[i]
-            if (weapon.WeaponId === id)
+            let weaponId = this._data.Weapons[i]
+            if (weaponId === id)
             {
                 this._data.Weapons.remove(i);
+                return
             }
         }
     }

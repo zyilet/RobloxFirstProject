@@ -2,6 +2,8 @@ import { UIUtils } from "../UIUtils";
 import { KnitClient } from "@rbxts/knit";
 import NumberFormatter from "shared/NumberFormatter";
 import { Connection } from "@rbxts/knit/Knit/Util/Signal";
+import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
+import { TextChatService } from "@rbxts/services";
 
 export type UIPanelName = "MainPanel" | "TestPanel" | "WeaponPanel"
 
@@ -80,6 +82,7 @@ class MainPanel extends BasePanel
     private _text?: TextLabel;
     private _ui?: ScreenGui;
     private _weaponsButton?: TextButton
+    private _textGold?: TextLabel
 
     private connection?: Connection;
 
@@ -89,7 +92,9 @@ class MainPanel extends BasePanel
         this._text = ui.WaitForChild("AttackValue").WaitForChild("Text") as TextLabel;
         this._ui = ui;
         this._weaponsButton = ui.WaitForChild("Weapons") as TextButton;
+        this._textGold = ui.WaitForChild("Gold") as TextLabel
 
+        this.InitSub()
         this.InitEvent();
     }
 
@@ -109,13 +114,12 @@ class MainPanel extends BasePanel
         let playerDataService = KnitClient.GetService("PlayerDataService");
 
         this._text!.Text = NumberFormatter.Format(playerDataService.GetAttack());
-
-        this.connection = playerDataService.OnAttackChanged.Connect(value => this._text!.Text = NumberFormatter.Format(value));
+        this._textGold!.Text = NumberFormatter.Format(playerDataService.GetGold())
     }
 
     private OnHide()
     {
-        this.connection?.Disconnect();
+        // this.connection?.Disconnect();
     }
 
     private InitEvent()
@@ -124,6 +128,12 @@ class MainPanel extends BasePanel
         {
             UIManager.GetInstance().Show("WeaponPanel")
         })
+    }
+
+    private InitSub()
+    {
+        KnitClient.GetService("PlayerDataService").OnAttackChanged.Connect(value => this._text!.Text = NumberFormatter.Format(value));
+        KnitClient.GetService("PlayerDataService").OnGoldChanged.Connect(value => this._textGold!.Text = NumberFormatter.Format(value))
     }
 }
 
@@ -136,8 +146,11 @@ class WeaponPanel extends BasePanel
     private _sellButton?: TextButton;
     private _backButton?: TextButton;
     private _scrollingFrame?: ScrollingFrame;
+    private _textWeaponStrength?: TextLabel
 
-    private _weaponIdToButton: Map<string, TextButton> = new Map<string, TextButton>;
+    private _items: { id: string, item: TextButton }[] = []
+
+    private _selected?: string
 
     public Init(ui: ScreenGui, manager: any): void
     {
@@ -147,8 +160,11 @@ class WeaponPanel extends BasePanel
         this._sellButton = ui.WaitForChild("Frame").WaitForChild("Sell") as TextButton
         this._backButton = ui.WaitForChild("Frame").WaitForChild("Back") as TextButton
         this._scrollingFrame = ui.WaitForChild("Frame").WaitForChild("Weapons").WaitForChild("ScrollingFrame") as ScrollingFrame
+        this._textWeaponStrength = ui.WaitForChild("Frame").WaitForChild("Information").WaitForChild("Strength") as TextLabel
 
-        this.InitEvent()
+        this.RefreshUI()
+        this.InitInputEvent()
+        this.InitSub()
     }
 
     public Show(): void
@@ -160,16 +176,119 @@ class WeaponPanel extends BasePanel
         this._ui!.Enabled = false;
     }
 
-    private InitEvent()
+    private InitInputEvent()
     {
+        //关闭页面
         this._backButton?.MouseButton1Click.Connect(() =>
         {
-            this.Hide()
+            UIManager.GetInstance().Hide("WeaponPanel")
+        })
+        //出售武器
+        this._sellButton?.MouseButton1Click.Connect(() =>
+        {
+            if (!this._selected)
+            {
+                return;
+            }
+
+            KnitClient.GetService("WeaponService").SellWeapon.Fire(this._selected)
+            this._selected = undefined
+            this.RefreshInformation()
+        })
+        //装备武器
+        this._equipButton?.MouseButton1Click.Connect(() =>
+        {
+            if (!this._selected)
+            {
+                return;
+            }
+            KnitClient.GetService("WeaponService").EquipWeapon.Fire(this._selected)
         })
     }
 
     private RefreshUI()
     {
-        let Weapons = KnitClient.GetService("WeaponService").GetAllWeapon();
+        print("refresh weapon ui")
+
+        let weapons = KnitClient.GetService("WeaponService").GetAllWeapon();
+        for (let i = 0; i < weapons.size(); i++)
+        {
+            this.AddWeaponItem(weapons[i])
+        }
+
+        this.RefreshInformation()
+    }
+
+    private RefreshInformation()
+    {
+        if (!this._selected)
+        {
+            this._textWeaponStrength!.Text = "没有选择武器"
+            return
+        }
+
+        let strength = WeaponConfigCollection.GetConfigById(this._selected).strength
+        this._textWeaponStrength!.Text = tostring(strength)
+    }
+
+    private InitSub()
+    {
+        //武器数量发生变化
+        KnitClient.GetService("WeaponService").WeaponsChanged.Connect(info =>
+        {
+            print("增加武器信号")
+            if (info.mode === "Add")
+            {
+                this.AddWeaponItem(info.id)
+                return;
+            }
+            if (info.mode === "Remove")
+            {
+                this.RemoveWeaponItem(info.id)
+                return;
+            }
+        })
+
+        //更换装备武器
+        KnitClient.GetService("WeaponService").EquipWeapon.Connect(weaponId =>
+        {
+
+        })
+    }
+
+    private RemoveSubscribe()
+    {
+        // this._connections.forEach(ele => ele.Disconnect)
+    }
+
+    private AddWeaponItem(id: string)
+    {
+        print("add weapon")
+
+        let config = WeaponConfigCollection.GetConfigById(id)
+        let button = this._weaponItemPrefab!.Clone()!
+
+        button.Visible = true
+        button.Text = config.name
+        button.Parent = this._scrollingFrame
+
+        button.MouseButton1Click.Connect(() =>
+        {
+            this._selected = id
+            this.RefreshInformation()
+        })
+
+        this._items.push({ id, item: button })
+    }
+    private RemoveWeaponItem(id: string)
+    {
+        print("remove weapon")
+
+        let index = this._items.findIndex(ele => ele.id === id);
+        if (index !== -1)
+        {
+            this._items[index].item.Destroy()
+            this._items.remove(index)
+        }
     }
 }

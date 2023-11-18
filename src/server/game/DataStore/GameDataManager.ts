@@ -1,6 +1,5 @@
 import { DataStoreService, HttpService, Players, TextChatService } from "@rbxts/services";
 import { PlayerData } from "./PlayerData";
-import { WeaponData } from "./WeaponData";
 import { PlayerDataAccessor } from "./PlayerDataAccessor";
 
 export class GameDataManager

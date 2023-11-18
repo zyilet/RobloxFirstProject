@@ -1,11 +1,10 @@
-import { WeaponData } from "./WeaponData";
 
 export class PlayerData
 {
     public UserId: number
     public Attack: number
     public Gold: number
-    public Weapons: WeaponData[]
+    public Weapons: string[]
     public EquipWeaponId: string | undefined;
 
     constructor(player: Player)

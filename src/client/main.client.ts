@@ -49,6 +49,14 @@ KnitClient.Start()
             timer += dt
         })
 
+        UserInputService.InputBegan.Connect((i, p) =>
+        {
+            if (i.KeyCode === Enum.KeyCode.P)
+            {
+                KnitClient.GetService("WeaponService").TestAddWeapon();
+            }
+        })
+
         UIManager.GetInstance().Show("MainPanel");
     })
     .catch(warn)

@@ -7,26 +7,28 @@ export type WeaponConfig = {
     price: number
 }
 
+let config: WeaponConfig[] = [
+    {
+        id: "测试武器1",
+        name: "测试武器1",
+        strength: 10,
+        quality: "Normal",
+        price: 100,
+        assetId: 0,
+    },
+    {
+        id: "测试武器2",
+        name: "测试武器2",
+        strength: 100,
+        quality: "Rare",
+        price: 200,
+        assetId: 0,
+    }
+]
+
 export class WeaponConfigCollection
 {
-    private static _configs: WeaponConfig[] = [
-        {
-            id: "测试武器1",
-            name: "测试武器1",
-            strength: 10,
-            quality: "Normal",
-            price: 100,
-            assetId: 0,
-        },
-        {
-            id: "测试武器2",
-            name: "测试武器2",
-            strength: 100,
-            quality: "Rare",
-            price: 200,
-            assetId: 0,
-        }
-    ]
+    private static _configs = config
 
     public static GetAllConfig()
     {

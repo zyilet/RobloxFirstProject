@@ -49,7 +49,7 @@ export class MonsterManager
                 task.defer(() =>
                 {
                     let monster = new Monster();
-                    let model = monster.Init(MonsterConfigCollection.GetConfigById(posInfo.monsterID), posInfo.cFrame)
+                    let model = monster.Init(MonsterConfigCollection.GetConfigById(posInfo.monsterID), posInfo.cFrame, posInfo.monsterID)
                     if (!model)
                     {
                         posInfo.posState = "Empty"
@@ -80,6 +80,26 @@ export class MonsterManager
             posInfo.monsterRef = undefined;
             this._modelToObj.delete(model);
             monster.OnDead()
+
+            //给玩家奖励
+            let reward = MonsterConfigCollection.GetRandomReward(monster.Id)
+
+            if (!reward)
+            {
+                return
+            }
+
+            if (reward.type === "Gold")
+            {
+                KnitServer.GetService("PlayerDataService").AddGold(player, reward.value)
+                return;
+            }
+
+            if (reward.type === "Weapon")
+            {
+                KnitServer.GetService("WeaponService").AddWeapon(player, reward.id)
+                return;
+            }
         }
     }
 }

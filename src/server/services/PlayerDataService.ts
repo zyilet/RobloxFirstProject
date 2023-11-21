@@ -100,13 +100,11 @@ const PlayerDataService = Knit.CreateService(
             if (success)
             {
                 let data = value as PlayerData;
-                print(data)
                 if (!data)
                 {
                     print("第一次初始化数据")
                     data = new PlayerData();
                 }
-                print(data)
                 this.PlayersData.set(player.UserId, data);
             }
         },

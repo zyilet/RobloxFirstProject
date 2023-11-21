@@ -6,6 +6,8 @@ export class PlayerData
     public Gold: number
     public Weapons: string[]
     public EquipWeaponId: string | undefined;
+    public Pets: string[]
+    public EquipPets: string[]
 
     constructor(player: Player)
     {
@@ -14,5 +16,7 @@ export class PlayerData
         this.Gold = 0;
         this.Weapons = []
         this.EquipWeaponId = undefined;
+        this.Pets = []
+        this.EquipPets = []
     }
 }

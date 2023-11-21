@@ -4,6 +4,7 @@ import { Players, RunService, UserInputService } from "@rbxts/services";
 import { UIManager } from "./game/UI/UIManager";
 import { WaitHumanoidRoot } from "shared/Constants";
 import { Transform } from "shared/Transform";
+import { Connection } from "@rbxts/knit/Knit/Util/Signal";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
@@ -51,12 +52,12 @@ KnitClient.Start()
 
         UserInputService.InputBegan.Connect((i, p) =>
         {
-            if (i.KeyCode === Enum.KeyCode.P)
-            {
-                KnitClient.GetService("WeaponService").TestAddWeapon();
-            }
+
         })
 
         UIManager.GetInstance().Show("MainPanel");
+
+
+
     })
     .catch(warn)

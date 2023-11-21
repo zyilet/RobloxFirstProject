@@ -12,6 +12,7 @@ import { MonsterManager } from "./game/Monster/MonsterManager";
 import { GameDataManager } from "./game/DataStore/GameDataManager";
 import { KnitServer } from "@rbxts/knit";
 import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
+import { Pet } from "./game/Pet";
 
 
 KnitServer.AddServices(script.Parent!.FindFirstChild('services') as Folder)
@@ -33,6 +34,15 @@ KnitServer.Start()
         Players.PlayerRemoving.Connect(player =>
         {
             GameDataManager.GetInstance().GetPlayerDataAccessor(player).ResetData();
+        })
+
+
+        //test
+        let pet = new Pet()
+
+        RunService.Heartbeat.Connect(dt =>
+        {
+            pet.Update(dt)
         })
     })
     .catch(warn)

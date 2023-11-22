@@ -1,5 +1,6 @@
 import { InsertService } from "@rbxts/services"
 import { PetConfigCollection } from "shared/GameConfig/PetConfig"
+import { Pet } from "./Pet"
 
 export type modelCache =
     {
@@ -31,29 +32,25 @@ export class PetManager
     }
     // #endregion
 
-    // public static PetModelCache = new Map<number, modelCache>()
-    public static PetModelCache = new Array<modelCache>()
-
-    public Handles = new Array<progressHandle>()
-    public Initialized = false;
+    private playerPets: [Player, Pet][] = []
 
     public Init()
     {
-        PetConfigCollection.GetAllConfig().forEach(config =>
-        {
-            let modelCache: modelCache = {
-                state: "Init",
-                loadingCount: 0,
-                assetId: config.assetId
-            }
-            // PetManager.PetModelCache.set(config.assetId, modelCache)
-            PetManager.PetModelCache.push(modelCache)
-        })
+
     }
 
     public Update(dt: number)
     {
+        for (const [plaeyr, pet] of this.playerPets)
+        {
+            pet.Update(dt)
+        }
+    }
 
+    public CreatePetForPlayer(player: Player, petId: string)
+    {
+        let pet = new Pet().Init(petId, player)
+        this.playerPets.push([player, pet])
     }
 
 

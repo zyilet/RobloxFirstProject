@@ -1,4 +1,7 @@
 import { KnitServer as Knit, RemoteSignal, Signal } from "@rbxts/knit";
+import { Players } from "@rbxts/services";
+import { PetManager } from "server/game/Pet/PetManager";
+import { AssetCacheManager } from "shared/AssetCache/AssetCacheManager";
 
 declare global
 {
@@ -25,7 +28,22 @@ const PetService = Knit.CreateService({
 
     KnitStart()
     {
+        Players.PlayerAdded.Connect(player =>
+        {
+            let petManager = PetManager.GetInstance()
+            let cacheManager = AssetCacheManager.GetInstance()
 
+            while (task.wait())
+            {
+                if (cacheManager.GetState() === "loaded")
+                {
+                    break
+                }
+            }
+
+            petManager.CreatePetForPlayer(player, "测试宠物1")
+
+        })
     }
 });
 

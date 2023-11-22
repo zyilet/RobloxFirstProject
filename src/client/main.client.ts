@@ -21,7 +21,6 @@ KnitClient.Start()
         //     controlSystem?.Update(dt);
         // })
 
-
         let timer = 0
         let interval = 0.1
         UserInputService.InputBegan.Connect((input, processed) =>
@@ -57,7 +56,11 @@ KnitClient.Start()
 
         UIManager.GetInstance().Show("MainPanel");
 
-
+        KnitClient.GetService("InitializeService").InitializeProgress.Connect(data =>
+        {
+            let msg = data.state === "initializing" ? `${data.state}:${data.progress}` : `${data.state}`
+            print(msg)
+        })
 
     })
     .catch(warn)

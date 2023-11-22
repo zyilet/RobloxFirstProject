@@ -1,4 +1,6 @@
 import { KnitServer as Knit, RemoteSignal } from "@rbxts/knit";
+import { Players, RunService } from "@rbxts/services";
+import { AssetCacheManager } from "shared/AssetCache/AssetCacheManager";
 
 declare global
 {
@@ -36,7 +38,27 @@ const InitializeService = Knit.CreateService({
 
     KnitStart()
     {
+        let assetCacheManager = AssetCacheManager.GetInstance()
+        Players.PlayerAdded.Connect(player =>
+        {
+            task.spawn(() =>
+            {
+                let progress = assetCacheManager.GetProgress()
+                while (progress !== 1)
+                {
+                    this.Client.InitializeProgress.Fire(player, {
+                        state: "initializing",
+                        progress
+                    })
 
+                    task.wait(1)
+                    progress = assetCacheManager.GetProgress()
+                }
+                this.Client.InitializeProgress.Fire(player, {
+                    state: "initialized"
+                })
+            })
+        })
     },
 });
 

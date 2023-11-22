@@ -1,0 +1,1 @@
+export type InitializedState = "not" | "done"

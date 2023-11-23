@@ -40,9 +40,12 @@ const PetService = Knit.CreateService({
                     break
                 }
             }
-
             petManager.CreatePetForPlayer(player, "测试宠物1")
-
+            petManager.CreatePetForPlayer(player, "测试宠物1")
+            petManager.CreatePetForPlayer(player, "测试宠物1")
+            petManager.CreatePetForPlayer(player, "测试宠物1")
+            petManager.CreatePetForPlayer(player, "测试宠物1")
+            petManager.CreatePetForPlayer(player, "测试宠物1")
         })
     }
 });

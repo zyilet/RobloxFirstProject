@@ -7,12 +7,12 @@ import { TextChatService } from "@rbxts/services";
 
 export type UIPanelName = "MainPanel" | "TestPanel" | "WeaponPanel"
 
-export class UIManager
+export class UIManager_Back
 {
-    private static _instance: UIManager;
+    private static _instance: UIManager_Back;
     public static GetInstance()
     {
-        return this._instance ??= new UIManager();
+        return this._instance ??= new UIManager_Back();
     }
 
     private _displayOrder = 1;
@@ -32,7 +32,7 @@ export class UIManager
 
             let ui = UIUtils.GetUIPanel(name);
 
-            panel.Init(ui, UIManager.GetInstance());
+            panel.Init(ui, UIManager_Back.GetInstance());
             this._nameToPanels.set(name, panel);
             this._nameToUI.set(name, ui)
         }
@@ -126,7 +126,7 @@ class MainPanel extends BasePanel
     {
         this._weaponsButton?.MouseButton1Click.Connect(() =>
         {
-            UIManager.GetInstance().Show("WeaponPanel")
+            UIManager_Back.GetInstance().Show("WeaponPanel")
         })
     }
 
@@ -181,7 +181,7 @@ class WeaponPanel extends BasePanel
         //关闭页面
         this._backButton?.MouseButton1Click.Connect(() =>
         {
-            UIManager.GetInstance().Hide("WeaponPanel")
+            UIManager_Back.GetInstance().Hide("WeaponPanel")
         })
         //出售武器
         this._sellButton?.MouseButton1Click.Connect(() =>
@@ -290,5 +290,23 @@ class WeaponPanel extends BasePanel
             this._items[index].item.Destroy()
             this._items.remove(index)
         }
+    }
+}
+
+class LoadingPanel extends BasePanel
+{
+    public Init(ui: ScreenGui, manager: any): void
+    {
+
+    }
+
+    public Show(): void
+    {
+
+    }
+
+    public Hide(): void
+    {
+
     }
 }

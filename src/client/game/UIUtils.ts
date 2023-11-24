@@ -1,5 +1,5 @@
 import { Players } from "@rbxts/services";
-import { UIPanelName } from "./UI/UIManager";
+import { UIPanelName } from "./UIManager/UIManager_Back";
 
 export class UIUtils
 {

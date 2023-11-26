@@ -1,4 +1,4 @@
-import { KnitServer as Knit } from "@rbxts/knit";
+import { KnitServer as Knit, KnitServer } from "@rbxts/knit";
 
 declare global
 {
@@ -18,7 +18,7 @@ const IncreaseService = Knit.CreateService({
 
     KnitInit()
     {
-        
+
     },
 
     KnitStart()

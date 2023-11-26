@@ -7,6 +7,8 @@ import { Transform } from "shared/Transform";
 import { Connection } from "@rbxts/knit/Knit/Util/Signal";
 import { GameManager } from "./game/GameManager/GameManager";
 import { MessageManager } from "./game/MessageManager/MessageManager";
+import { UIManager } from "./game/UIManager/UIManager";
+import { UILoadingPanel } from "./game/UIManager/UIPanels/UILoadingPanel";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
@@ -28,7 +30,7 @@ KnitClient.Start()
 // task.wait(5)
 
 // print("加载角色")
-// KnitClient.GetService("GameService").LoadCharacter.Fire()
+KnitClient.GetService("GameService").LoadCharacter.Fire()
 
 // task.wait(3)
 
@@ -43,3 +45,12 @@ KnitClient.Start()
 // StarterGui.SetCore("ResetButtonCallback", cb)
 
 // KnitClient.GetService("GameService").GetInitializeProgress()
+
+let c = Players.LocalPlayer.GetMouse().Button1Down.Connect(() =>
+{
+    if (!UIManager.GetInstance().IsOpening(UILoadingPanel))
+    {
+        UIManager.GetInstance().Open(UILoadingPanel)
+    }
+    c.Disconnect()
+})

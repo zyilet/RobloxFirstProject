@@ -35,11 +35,9 @@ export class GameLoadingState extends FsmStateBase<GameManager, GameStateKeys>
 
     OnUpdate(dt: number): void
     {
-        print(this.initProgressValue)
     }
 
     OnExit(): void
     {
-        print("loading exit")
     }
 }

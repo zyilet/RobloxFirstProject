@@ -1,7 +1,6 @@
 import { KnitClient } from "@rbxts/knit";
 import { ControlSystem } from "./game/ControlManager";
 import { Players, RunService, StarterGui, UserInputService } from "@rbxts/services";
-import { UIManager_Back } from "./game/UIManager/UIManager_Back";
 import { WaitHumanoidRoot } from "shared/Constants";
 import { Transform } from "shared/Transform";
 import { Connection } from "@rbxts/knit/Knit/Util/Signal";
@@ -9,6 +8,7 @@ import { GameManager } from "./game/GameManager/GameManager";
 import { MessageManager } from "./game/MessageManager/MessageManager";
 import { UIManager } from "./game/UIManager/UIManager";
 import { UILoadingPanel } from "./game/UIManager/UIPanels/UILoadingPanel";
+import { DataManager } from "./game/DataManager/DataManager";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
@@ -19,7 +19,8 @@ KnitClient.Start()
         print("Client Started");
 
         //游戏逻辑入口，帧循环驱动
-        let gameManager = new GameManager().Init()
+        let gameManager = GameManager.GetInstance().Init()
+
         RunService.Heartbeat.Connect(dt =>
         {
             gameManager.Update(dt)
@@ -30,7 +31,7 @@ KnitClient.Start()
 // task.wait(5)
 
 // print("加载角色")
-KnitClient.GetService("GameService").LoadCharacter.Fire()
+// KnitClient.GetService("GameService").LoadCharacter.Fire()
 
 // task.wait(3)
 
@@ -46,11 +47,11 @@ KnitClient.GetService("GameService").LoadCharacter.Fire()
 
 // KnitClient.GetService("GameService").GetInitializeProgress()
 
-let c = Players.LocalPlayer.GetMouse().Button1Down.Connect(() =>
-{
-    if (!UIManager.GetInstance().IsOpening(UILoadingPanel))
-    {
-        UIManager.GetInstance().Open(UILoadingPanel)
-    }
-    c.Disconnect()
-})
+// let c = Players.LocalPlayer.GetMouse().Button1Down.Connect(() =>
+// {
+//     if (!UIManager.GetInstance().IsOpening(UILoadingPanel))
+//     {
+//         UIManager.GetInstance().Open(UILoadingPanel)
+//     }
+//     c.Disconnect()
+// })

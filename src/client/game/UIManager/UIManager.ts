@@ -14,11 +14,14 @@ export class UIManager
 
     public Open<T extends UIPanel>(UIPanel: { new(): T, Name: string })
     {
+        if (this.uiPanelStack.GetDepth() > 0)
+        {
+            let [name, panel] = this.uiPanelStack.Peek()
+            panel.OnCovered()
+        }
+
         let panel = new UIPanel()
-
         this.uiPanelStack.Push([UIPanel.Name, panel])
-
-        panel.OnInit()
         panel.OnShow(this.uiPanelStack.GetDepth())
     }
 
@@ -33,6 +36,12 @@ export class UIManager
         {
             let [name, panel] = this.uiPanelStack.Pop()
             panel.OnClose()
+
+            if (this.uiPanelStack.GetDepth() > 0)
+            {
+                let [nextName, nextPanel] = this.uiPanelStack.Peek()
+                panel.OnUnCovered()
+            }
 
             if (name === UIPanel.Name)
             {

@@ -19,23 +19,34 @@ const WeaponService = Knit.CreateService({
         //订阅
         EquipWeaponChanged: new RemoteSignal<(id: string) => void>(),
         WeaponsChanged: new RemoteSignal<(info: { mode: "Add" | "Remove", id: string }) => void>(),
-        //发布
+
+        //当玩家第一次连接服务器时，推送玩家武器的总量
+        AllWeapons: new RemoteSignal<(data: { ids: string[] }) => void>(),
+        //玩家武器增加
+        AddWeapon: new RemoteSignal<(data: { id: string }) => void>(),
+        //玩家武器移除
+        RemoveWeapon: new RemoteSignal<(data: { id: string }) => void>(),
+        //玩家装备的武器
+        EquippedWeapon: new RemoteSignal<(data: { id: string | undefined }) => void>(),
+
         EquipWeapon: new RemoteSignal<(weaponId: string) => void>(),
         SellWeapon: new RemoteSignal<(ids: string) => void>(),
-        //调用
-        GetCurWeapon(player: Player)
-        {
-            return this.Server.GetCurWeaponId(player);
-        },
-        GetAllWeapon(player: Player)
-        {
-            return this.Server.GetAllWeapon(player);
-        },
-        TestAddWeapon(player: Player)
-        {
-            this.Server.AddWeapon(player, math.random(1, 2) === 1 ? "测试武器1" : "测试武器2")
-            print(this.Server.GetAllWeapon(player))
-        }
+
+        // //发布
+        // //调用
+        // GetCurWeapon(player: Player)
+        // {
+        //     return this.Server.GetCurWeaponId(player);
+        // },
+        // GetAllWeapon(player: Player)
+        // {
+        //     return this.Server.GetAllWeapon(player);
+        // },
+        // TestAddWeapon(player: Player)
+        // {
+        //     this.Server.AddWeapon(player, math.random(1, 2) === 1 ? "测试武器1" : "测试武器2")
+        //     print(this.Server.GetAllWeapon(player))
+        // }
     },
 
     KnitInit()
@@ -52,6 +63,12 @@ const WeaponService = Knit.CreateService({
         this.Client.SellWeapon.Connect((player, weaponId) =>
         {
             this.SellWeapon(player, weaponId)
+        })
+
+        Players.PlayerAdded.Connect(player =>
+        {
+            this.Client.AllWeapons.Fire(player, { ids: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAllWeapon() })
+            this.Client.EquippedWeapon.Fire(player, { id: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetCurEquipWeaponId() })
         })
     },
 

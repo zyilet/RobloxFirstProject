@@ -39,4 +39,9 @@ export class UILoadingPanel extends UIPanel
     {
 
     }
+
+    public OnUpdate(dt: number): void
+    {
+
+    }
 }

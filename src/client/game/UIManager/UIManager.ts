@@ -10,6 +10,21 @@ export class UIManager
         return this.instance ??= new UIManager()
     }
 
+    public Init()
+    {
+
+        return this
+    }
+
+    public Update(dt: number)
+    {
+        if (this.uiPanelStack.GetDepth() > 0)
+        {
+            let [name, panel] = this.uiPanelStack.Peek()
+            panel.OnUpdate(dt)
+        }
+    }
+
     private uiPanelStack: UIPanelStack = new UIPanelStack()
 
     public Open<T extends UIPanel>(UIPanel: { new(): T, Name: string })
@@ -40,7 +55,7 @@ export class UIManager
             if (this.uiPanelStack.GetDepth() > 0)
             {
                 let [nextName, nextPanel] = this.uiPanelStack.Peek()
-                panel.OnUnCovered()
+                nextPanel.OnUnCovered()
             }
 
             if (name === UIPanel.Name)

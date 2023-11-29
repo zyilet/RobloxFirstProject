@@ -1,6 +1,7 @@
 import { KnitServer as Knit, KnitServer, RemoteSignal } from "@rbxts/knit";
 import { Players } from "@rbxts/services";
 import { GameDataManager } from "server/game/DataStore/GameDataManager";
+import { PlayerWeaponData } from "server/game/DataStore/PlayerData";
 import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
 
 declare global
@@ -21,13 +22,13 @@ const WeaponService = Knit.CreateService({
         WeaponsChanged: new RemoteSignal<(info: { mode: "Add" | "Remove", id: string }) => void>(),
 
         //当玩家第一次连接服务器时，推送玩家武器的总量
-        AllWeapons: new RemoteSignal<(data: { ids: string[] }) => void>(),
+        AllWeapons: new RemoteSignal<(data: { weapons: PlayerWeaponData[] }) => void>(),
         //玩家武器增加
-        AddWeapon: new RemoteSignal<(data: { id: string }) => void>(),
+        AddWeapon: new RemoteSignal<(data: { weapon: PlayerWeaponData }) => void>(),
         //玩家武器移除
-        RemoveWeapon: new RemoteSignal<(data: { id: string }) => void>(),
+        RemoveWeapon: new RemoteSignal<(data: { weapon: PlayerWeaponData }) => void>(),
         //玩家装备的武器
-        EquippedWeapon: new RemoteSignal<(data: { id: string | undefined }) => void>(),
+        EquippedWeapon: new RemoteSignal<(data: { guid: string | undefined }) => void>(),
 
         EquipWeapon: new RemoteSignal<(weaponId: string) => void>(),
         SellWeapon: new RemoteSignal<(ids: string) => void>(),
@@ -67,8 +68,8 @@ const WeaponService = Knit.CreateService({
 
         Players.PlayerAdded.Connect(player =>
         {
-            this.Client.AllWeapons.Fire(player, { ids: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAllWeapon() })
-            this.Client.EquippedWeapon.Fire(player, { id: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetCurEquipWeaponId() })
+            this.Client.AllWeapons.Fire(player, { weapons: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAllWeapon() })
+            this.Client.EquippedWeapon.Fire(player, { guid: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetCurEquipWeaponId() })
         })
     },
 
@@ -91,14 +92,13 @@ const WeaponService = Knit.CreateService({
     },
 
     //出售一把武器
-    SellWeapon(player: Player, weaponId: string)
+    SellWeapon(player: Player, weaponData: PlayerWeaponData)
     {
         let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player);
-        let price = WeaponConfigCollection.GetConfigById(weaponId).price
+        let price = WeaponConfigCollection.GetConfigById(weaponData.Id).price
+        accessor.RemoveWeapon(weaponData.Guid)
 
-        accessor.RemoveWeapon(weaponId)
-        this.Client.WeaponsChanged.Fire(player, { mode: "Remove", id: weaponId })
-
+        this.Client.RemoveWeapon.Fire(player, { weapon: weaponData })
         KnitServer.GetService("PlayerDataService").AddGold(player, price);
     },
 

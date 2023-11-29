@@ -3,6 +3,7 @@ import { GameStateKeys } from "./GameStates/StateKeys"
 import { GameLoadingState } from "./GameStates/GameLoadingState"
 import { GameMainState } from "./GameStates/GameMainState"
 import { DataManager } from "../DataManager/DataManager"
+import { UIManager } from "../UIManager/UIManager"
 
 export class GameManager
 {
@@ -13,11 +14,14 @@ export class GameManager
     }
 
     private dataManager?: DataManager
+    private uiManager?: UIManager
+
     private fsm?: Fsm<GameManager, GameStateKeys>
 
     public Init()
     {
         this.dataManager = DataManager.GetInstance().Init()
+        this.uiManager = UIManager.GetInstance().Init()
         this.fsm = this.CreateGameStateFsm()
         return this
     }
@@ -25,6 +29,7 @@ export class GameManager
     public Update(dt: number)
     {
         this.dataManager?.Update(dt)
+        this.uiManager?.Update(dt)
         this.fsm?.Update(dt)
     }
 

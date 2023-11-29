@@ -14,7 +14,7 @@ let config: WeaponConfig[] = [
         strength: 10,
         quality: "Normal",
         price: 100,
-        assetId: 0,
+        assetId: 15493679873,
     },
     {
         id: "测试武器2",
@@ -22,7 +22,7 @@ let config: WeaponConfig[] = [
         strength: 100,
         quality: "Rare",
         price: 200,
-        assetId: 0,
+        assetId: 15493696236,
     }
 ]
 

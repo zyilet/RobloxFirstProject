@@ -1,4 +1,5 @@
-import { PlayerData } from "./PlayerData";
+import { HttpService } from "@rbxts/services";
+import { PlayerData, PlayerWeaponData } from "./PlayerData";
 
 export class PlayerDataAccessor
 {
@@ -76,25 +77,26 @@ export class PlayerDataAccessor
     {
         return this._data.Weapons;
     }
-    public EquipWeapon(id: string | undefined)
+    public EquipWeapon(guid: string | undefined)
     {
-        this._data.EquipWeaponId = id;
+        this._data.EquipWeaponId = guid;
     }
     public AddWeapon(weaponId: string)
     {
-        this._data.Weapons.push(weaponId);
+        this._data.Weapons.push(new PlayerWeaponData(HttpService.GenerateGUID(), weaponId));
     }
-    public RemoveWeapon(id: string)
+    public RemoveWeapon(guid: string)
     {
-        for (let i = this._data.Weapons.size() - 1; i >= 0; i--)
-        {
-            let weaponId = this._data.Weapons[i]
-            if (weaponId === id)
-            {
-                this._data.Weapons.remove(i);
-                return
-            }
-        }
+        this._data.Weapons = this._data.Weapons.filter(weapon => weapon.Guid !== guid)
+        // for (let i = this._data.Weapons.size() - 1; i >= 0; i--)
+        // {
+        //     let weapon = this._data.Weapons[i]
+        //     if (weapon.Guid === guid)
+        //     {
+        //         this._data.Weapons.remove(i);
+        //         return
+        //     }
+        // }
     }
     // #endregion
 
@@ -103,21 +105,27 @@ export class PlayerDataAccessor
     {
         return this._data.Pets
     }
-    public EquipPet(id: string)
+    public EquipPet(guid: string)
     {
-        this._data.EquipPets.push(id)
+        this._data.EquipPets.push(guid)
     }
-    public RemovePet(id: string)
+    public UnEquipPet(guid: string)
     {
-        for (let i = this._data.Pets.size() - 1; i >= 0; i--)
-        {
-            let petId = this._data.Pets[i]
-            if (petId === id)
-            {
-                this._data.Weapons.remove(i);
-                return
-            }
-        }
+        this._data.EquipPets = this._data.EquipPets.filter(petGuid => petGuid !== guid)
+    }
+    public RemovePet(guid: string)
+    {
+
+        this._data.Pets = this._data.Pets.filter(pet => pet.Guid !== guid)
+        // for (let i = this._data.Pets.size() - 1; i >= 0; i--)
+        // {
+        //     let pet = this._data.Pets[i]
+        //     if (pet.Guid === guid)
+        //     {
+        //         this._data.Weapons.remove(i);
+        //         return
+        //     }
+        // }
     }
     // #endregion
 }

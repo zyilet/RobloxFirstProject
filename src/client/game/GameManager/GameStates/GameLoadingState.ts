@@ -4,7 +4,7 @@ import { GameStateKeys } from "./StateKeys";
 import { KnitClient } from "@rbxts/knit";
 import { UIManager } from "client/game/UIManager/UIManager";
 import { UILoadingPanel } from "client/game/UIManager/UIPanels/UILoadingPanel";
-import { Players } from "@rbxts/services";
+import { Players, StarterGui } from "@rbxts/services";
 
 export class GameLoadingState extends FsmStateBase<GameManager, GameStateKeys>
 {
@@ -22,6 +22,7 @@ export class GameLoadingState extends FsmStateBase<GameManager, GameStateKeys>
     OnEntry(): void
     {
         UIManager.GetInstance().Open(UILoadingPanel)
+        StarterGui.SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
         KnitClient.GetService("InitializeService").InitializeProgress.Connect(data =>
         {

@@ -29,5 +29,10 @@ export class UIWeaponInfoPanel extends UIPanel
     public OnUnCovered(): void
     {
     }
+    
+    public OnUpdate(dt: number): void
+    {
+
+    }
 
 }

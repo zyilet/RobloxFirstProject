@@ -21,6 +21,8 @@ export class UIMainPanel extends UIPanel
 
         this.btnWeapon = uiElements.find(ele => ele.Name === "BtnWeapon") as ImageButton
         this.btnPet = uiElements.find(ele => ele.Name === "BtnPet") as ImageButton
+
+        this.isInited = true
     })()
 
     private conns: RBXScriptConnection[] = []
@@ -40,12 +42,19 @@ export class UIMainPanel extends UIPanel
 
     public OnCovered(): void
     {
+        print("covered")
         this.UnBindEvent()
     }
 
     public OnUnCovered(): void
     {
+        print("uncovered")
         this.BindEvent()
+    }
+
+    public OnUpdate(dt: number): void
+    {
+
     }
 
     private BindEvent()
@@ -64,5 +73,6 @@ export class UIMainPanel extends UIPanel
     private UnBindEvent()
     {
         this.conns.forEach(conn => conn.Disconnect())
+        this.conns.clear()
     }
 }

@@ -2,6 +2,8 @@ import { KnitServer as Knit, KnitServer, RemoteSignal } from "@rbxts/knit";
 import { Players } from "@rbxts/services";
 import { GameDataManager } from "server/game/DataStore/GameDataManager";
 import { PlayerWeaponData } from "server/game/DataStore/PlayerData";
+import { PlayerDataManager } from "server/game/PlayerDataManager/PlayerDataManager";
+import { WeaponManger } from "server/game/WeaponManager/WeaponManager";
 import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
 
 declare global
@@ -17,37 +19,18 @@ const WeaponService = Knit.CreateService({
 
     Client:
     {
-        //订阅
-        EquipWeaponChanged: new RemoteSignal<(id: string) => void>(),
-        WeaponsChanged: new RemoteSignal<(info: { mode: "Add" | "Remove", id: string }) => void>(),
-
         //当玩家第一次连接服务器时，推送玩家武器的总量
-        AllWeapons: new RemoteSignal<(data: { weapons: PlayerWeaponData[] }) => void>(),
+        AllWeapons: new RemoteSignal<(weapons: PlayerWeaponData[]) => void>(),
         //玩家武器增加
-        AddWeapon: new RemoteSignal<(data: { weapon: PlayerWeaponData }) => void>(),
+        AddWeapon: new RemoteSignal<(weapon: PlayerWeaponData) => void>(),
         //玩家武器移除
-        RemoveWeapon: new RemoteSignal<(data: { weapon: PlayerWeaponData }) => void>(),
+        RemoveWeapon: new RemoteSignal<(weapon: PlayerWeaponData) => void>(),
         //玩家装备的武器
-        EquippedWeapon: new RemoteSignal<(data: { guid: string | undefined }) => void>(),
+        EquippedWeapon: new RemoteSignal<(guid: string | undefined) => void>(),
 
-        EquipWeapon: new RemoteSignal<(weaponId: string) => void>(),
-        SellWeapon: new RemoteSignal<(ids: string) => void>(),
-
-        // //发布
-        // //调用
-        // GetCurWeapon(player: Player)
-        // {
-        //     return this.Server.GetCurWeaponId(player);
-        // },
-        // GetAllWeapon(player: Player)
-        // {
-        //     return this.Server.GetAllWeapon(player);
-        // },
-        // TestAddWeapon(player: Player)
-        // {
-        //     this.Server.AddWeapon(player, math.random(1, 2) === 1 ? "测试武器1" : "测试武器2")
-        //     print(this.Server.GetAllWeapon(player))
-        // }
+        EquipWeapon: new RemoteSignal<(guid: string) => void>(),
+        UnEquipWeapon: new RemoteSignal<() => void>(),
+        SellWeapon: new RemoteSignal<(guid: string) => void>(),
     },
 
     KnitInit()
@@ -57,63 +40,46 @@ const WeaponService = Knit.CreateService({
 
     KnitStart()
     {
-        this.Client.EquipWeapon.Connect((player, weaponId) =>
+        Players.PlayerAdded.Connect(p =>
         {
-            this.EquipWeapon(player, weaponId);
-        })
-        this.Client.SellWeapon.Connect((player, weaponId) =>
-        {
-            this.SellWeapon(player, weaponId)
+            let wa = WeaponManger.GetInstance().CreateAccessor(p)
+            this.Client.AllWeapons.Fire(p, wa.GetAllWeapon())
+            this.Client.EquippedWeapon.Fire(p, wa.GetEquippedWeapon())
         })
 
-        Players.PlayerAdded.Connect(player =>
+        this.Client.EquipWeapon.Connect((p, guid) =>
         {
-            this.Client.AllWeapons.Fire(player, { weapons: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAllWeapon() })
-            this.Client.EquippedWeapon.Fire(player, { guid: GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetCurEquipWeaponId() })
+            let wa = WeaponManger.GetInstance().CreateAccessor(p)
+
+            wa.EquipWeapon(guid)
+            this.Client.EquippedWeapon.Fire(p, wa.GetEquippedWeapon())
+        })
+
+        this.Client.UnEquipWeapon.Connect(p =>
+        {
+            let wa = WeaponManger.GetInstance().CreateAccessor(p)
+
+            wa.UnEquipWeapon()
+            this.Client.EquippedWeapon.Fire(p, undefined)
+        })
+
+        this.Client.SellWeapon.Connect((p, guid) =>
+        {
+            let wa = WeaponManger.GetInstance().CreateAccessor(p)
+            let pa = PlayerDataManager.GetInstance().CreateAccessor(p)
+
+            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).price
+            wa.RemoveWeapon(guid)
+            pa.AddGold(price)
         })
     },
 
-    //获取当前武器
-    GetCurWeaponId(player: Player)
-    {
-        return GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetCurEquipWeaponId();
-    },
-    //获取所有武器
-    GetAllWeapon(player: Player)
-    {
-        return GameDataManager.GetInstance().GetPlayerDataAccessor(player).GetAllWeapon();
-    },
-
-    //向玩家添加武器
     AddWeapon(player: Player, weaponId: string)
     {
-        GameDataManager.GetInstance().GetPlayerDataAccessor(player).AddWeapon(weaponId);
-        this.Client.WeaponsChanged.Fire(player, { mode: "Add", id: weaponId });
-    },
+        let wa = WeaponManger.GetInstance().CreateAccessor(player)
 
-    //出售一把武器
-    SellWeapon(player: Player, weaponData: PlayerWeaponData)
-    {
-        let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player);
-        let price = WeaponConfigCollection.GetConfigById(weaponData.Id).price
-        accessor.RemoveWeapon(weaponData.Guid)
-
-        this.Client.RemoveWeapon.Fire(player, { weapon: weaponData })
-        KnitServer.GetService("PlayerDataService").AddGold(player, price);
-    },
-
-    //装备指定id的武器
-    EquipWeapon(player: Player, id: string)
-    {
-        let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player);
-        let haveWeapons = accessor.GetAllWeapon();
-        //检查玩家背包是否存在这个武器
-        if (!haveWeapons.find(ele => ele === id))
-        {
-            return;
-        }
-        accessor.EquipWeapon(id);
-        this.Client.EquipWeaponChanged.Fire(player, id);
+        let weapon = wa.AddWeapon(weaponId)
+        this.Client.AddWeapon.Fire(player, weapon)
     }
 });
 

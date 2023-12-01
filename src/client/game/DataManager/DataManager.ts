@@ -13,7 +13,7 @@ export class DataManager
 
     public Init()
     {
-        this.weaponManger = WeaponDataManager.GetInstance()
+        this.weaponManger = WeaponDataManager.GetInstance().Init()
 
         return this
     }
@@ -25,11 +25,11 @@ export class DataManager
 
     public GetAllWeapons()
     {
-        return this.weaponManger?.GetAllWeapons()
+        return this.weaponManger!.GetAllWeapons()
     }
 
     public GetEquippedWeapon()
     {
-        return this.weaponManger?.GetEquippedWeapon()
+        return this.weaponManger!.GetEquippedWeapon()
     }
 }

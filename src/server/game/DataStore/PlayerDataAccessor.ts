@@ -66,12 +66,17 @@ export class PlayerDataAccessor
     {
         this._data.Gold += value;
     }
+    public RemoveGold(value: number)
+    {
+        let result = this.GetGold() - value
+        this._data.Gold = math.max(0, result)
+    }
     // #endregion
 
     // #region 武器相关接口
-    public GetCurEquipWeaponId()
+    public GetCurEquipWeapon()
     {
-        return this._data.EquipWeaponId
+        return this._data.EquippedWeapon
     }
     public GetAllWeapon()
     {
@@ -79,11 +84,13 @@ export class PlayerDataAccessor
     }
     public EquipWeapon(guid: string | undefined)
     {
-        this._data.EquipWeaponId = guid;
+        this._data.EquippedWeapon = guid;
     }
     public AddWeapon(weaponId: string)
     {
-        this._data.Weapons.push(new PlayerWeaponData(HttpService.GenerateGUID(), weaponId));
+        let weapon = new PlayerWeaponData(HttpService.GenerateGUID(), weaponId)
+        this._data.Weapons.push(weapon)
+        return weapon
     }
     public RemoveWeapon(guid: string)
     {

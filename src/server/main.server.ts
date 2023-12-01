@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-01 13:47:40
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-23 17:35:06
+ * @LastEditTime: 2023-11-30 16:15:18
  * @FilePath: \RobloxFirstProject\src\server\main.server.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -58,5 +58,21 @@ KnitServer.Start()
         // {
         //     testFsm.Update(dt)
         // })
+
+        Players.PlayerAdded.Connect(p =>
+        {
+            let folder = new Instance("Folder")
+            folder.Name = "Cache"
+            folder.Parent = p
+
+            wait(5)
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+        })
     })
     .catch(warn)

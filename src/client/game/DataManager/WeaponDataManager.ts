@@ -1,4 +1,11 @@
 import { KnitClient } from "@rbxts/knit"
+import { MessageManager } from "../MessageManager/MessageManager"
+import { Messages } from "../MessageManager/MessageDefine"
+
+export type PlayerWeaponData = {
+    Guid: string,
+    Id: string
+}
 
 export class WeaponDataManager
 {
@@ -8,7 +15,7 @@ export class WeaponDataManager
         return this.instance ??= new WeaponDataManager()
     }
 
-    private allWeapons: string[] = []
+    private allWeapons: PlayerWeaponData[] = []
     private equippedWeapon: string | undefined = undefined
 
     public Init()
@@ -17,29 +24,30 @@ export class WeaponDataManager
 
         WeaponService.AllWeapons.Connect(data =>
         {
-            this.allWeapons = data.ids
+            this.allWeapons = data
         })
 
         WeaponService.AddWeapon.Connect(data =>
         {
-            this.allWeapons.push(data.id)
+            this.allWeapons.push(data)
+
+            MessageManager.GetInstance().Publish(Messages.AddWeapon, data)
         })
 
         WeaponService.RemoveWeapon.Connect(data =>
         {
-            for (let i = this.allWeapons.size() - 1; i >= 0; i--)
-            {
-                if (this.allWeapons[i] === data.id)
-                {
-                    this.allWeapons.remove(i)
-                }
-            }
+            this.allWeapons = this.allWeapons.filter(weapon => weapon.Guid !== data.Guid)
+
+            MessageManager.GetInstance().Publish(Messages.RemoveWeapon, data)
         })
 
         WeaponService.EquippedWeapon.Connect(data =>
         {
-            this.equippedWeapon = data.id
+            this.equippedWeapon = data
+
+            MessageManager.GetInstance().Publish(Messages.EquipWeapon, data)
         })
+        return this
     }
 
     public Update(dt: number)

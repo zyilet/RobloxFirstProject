@@ -19,20 +19,30 @@ export abstract class UIPanel
     protected static LoadUIPanel(panelName: string)
     {
         while (this.isUIPanelInited === false) wait()
-
         let panel = this.uiPanels.WaitForChild(panelName) as ScreenGui
 
-        panel.Parent = this.playerGui
+        if (panel === undefined)
+        {
+            error(`找不到这个UI面板__${panelName}`)
+        }
 
+        panel = panel.Clone()
+        panel.Parent = this.playerGui
         return panel
     }
 
-    protected static FinUIElements<T>(eleName: string)
+    protected static LoadUIElements<T extends Instance>(eleName: string)
     {
         while (this.isUIPanelInited === false) wait()
         let ele = this.uiElements.WaitForChild(eleName) as T
 
-        return ele ? ele : error(`找不到这个元素__${eleName}`)
+        if (ele === undefined)
+        {
+            error(`找不到这个元素__${eleName}`)
+        }
+
+        ele = ele.Clone()
+        return ele
     }
 
     protected static EnsureNotNil(ele: unknown, name: string = "")
@@ -44,14 +54,47 @@ export abstract class UIPanel
     }
 
     public static Name: string
-    public abstract OnShow(depth: number): void
+
+    public abstract OnShow(depth: number, ...params: unknown[]): void
     public abstract OnClose(): void
-    public abstract OnCovered(): void
-    public abstract OnUnCovered(): void
-    public abstract OnUpdate(dt: number): void
+    public abstract BindEvent(): void
+    public abstract UnBindEvent(): void
+
+    public OnCovered() { }
+    public OnUnCovered() { }
+    public OnUpdate(dt: number) { }
+
+    public Show(depth: number, ...params: unknown[])
+    {
+        this.OnShow(depth, ...params)
+        this.BindEvent()
+    }
+
+    public Covered()
+    {
+        this.UnCovered()
+        this.UnBindEvent()
+    }
+
+    public UnCovered()
+    {
+        this.OnUnCovered()
+        this.BindEvent()
+    }
+
+    public Close()
+    {
+        this.OnClose()
+        this.UnBindEvent()
+    }
+
+    public Update(dt: number)
+    {
+        this.OnUpdate(dt)
+    }
 }
 
-export interface RBXScriptConnection
-{
-    BindToUI(): void
-}
+// export interface RBXScriptConnection
+// {
+//     BindToUI(): void
+// }

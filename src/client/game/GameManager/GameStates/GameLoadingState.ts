@@ -4,7 +4,7 @@ import { GameStateKeys } from "./StateKeys";
 import { KnitClient } from "@rbxts/knit";
 import { UIManager } from "client/game/UIManager/UIManager";
 import { UILoadingPanel } from "client/game/UIManager/UIPanels/UILoadingPanel";
-import { Players, StarterGui } from "@rbxts/services";
+import { InsertService, Players, StarterGui } from "@rbxts/services";
 
 export class GameLoadingState extends FsmStateBase<GameManager, GameStateKeys>
 {

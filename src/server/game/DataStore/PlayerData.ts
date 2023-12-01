@@ -29,7 +29,7 @@ export class PlayerData
     public Attack: number
     public Gold: number
     public Weapons: PlayerWeaponData[]
-    public EquipWeaponId: string | undefined;
+    public EquippedWeapon: string | undefined;
     public Pets: PlayerPetData[]
     public EquipPets: string[]
 
@@ -39,7 +39,7 @@ export class PlayerData
         this.Attack = 0;
         this.Gold = 0;
         this.Weapons = []
-        this.EquipWeaponId = undefined;
+        this.EquippedWeapon = undefined;
         this.Pets = []
         this.EquipPets = []
     }

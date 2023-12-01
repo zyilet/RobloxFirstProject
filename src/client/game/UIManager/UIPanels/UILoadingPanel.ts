@@ -30,18 +30,10 @@ export class UILoadingPanel extends UIPanel
         UILoadingPanel.panel.Enabled = false
     }
 
-    public OnCovered(): void
+    public BindEvent(): void
     {
-
     }
-
-    public OnUnCovered(): void
+    public UnBindEvent(): void
     {
-
-    }
-
-    public OnUpdate(dt: number): void
-    {
-
     }
 }

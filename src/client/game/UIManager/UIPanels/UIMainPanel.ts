@@ -6,73 +6,55 @@ export class UIMainPanel extends UIPanel
 {
     public static Name = "UIMainPanel"
 
-    private static isInited: boolean = false
-    private static panel: ScreenGui
-    private static btnWeapon: ImageButton
-    private static btnPet: ImageButton
 
-    private static _staticInit = (() =>
-    {
-        this.panel = UIPanel.LoadUIPanel(this.Name)
-        this.panel.Enabled = false
+    private ui?: ScreenGui = undefined
+    private btnWeapon?: ImageButton
+    private btnPet?: ImageButton
 
-        let uiElements = this.panel.GetDescendants()
-        print(uiElements.size())
-
-        this.btnWeapon = uiElements.find(ele => ele.Name === "BtnWeapon") as ImageButton
-        this.btnPet = uiElements.find(ele => ele.Name === "BtnPet") as ImageButton
-
-        this.isInited = true
-    })()
-
-    private conns: RBXScriptConnection[] = []
+    private unBindHandles: (() => void)[] = []
 
     public OnShow(depth: number): void
     {
-        UIMainPanel.panel.Enabled = true
-        UIMainPanel.panel.DisplayOrder = depth
+        this.Init(depth)
+    }
 
-        this.BindEvent()
+    private Init(depth: number)
+    {
+        this.ui = UIPanel.LoadUIPanel(UIMainPanel.Name)
+        this.ui.DisplayOrder = depth
+
+        let uiElements = this.ui.GetDescendants()
+        this.btnWeapon = uiElements.find(ele => ele.Name === "BtnWeapon") as ImageButton
+        this.btnPet = uiElements.find(ele => ele.Name === "BtnPet") as ImageButton
     }
 
     public OnClose(): void
     {
-        this.UnBindEvent()
+        this.ui?.Destroy()
     }
 
-    public OnCovered(): void
+    public BindEvent()
     {
-        print("covered")
-        this.UnBindEvent()
-    }
-
-    public OnUnCovered(): void
-    {
-        print("uncovered")
-        this.BindEvent()
-    }
-
-    public OnUpdate(dt: number): void
-    {
-
-    }
-
-    private BindEvent()
-    {
-        this.conns.push(UIMainPanel.btnWeapon.MouseButton1Down.Connect(() =>
+        let c1 = this.btnWeapon!.MouseButton1Down.Connect(() =>
         {
             print("按下武器按钮")
-            UIManager.GetInstance().Open(UIWeaponPanel)
-        }))
-        this.conns.push(UIMainPanel.btnPet.MouseButton1Down.Connect(() =>
+            UIManager.GetInstance().Open(UIWeaponPanel, "打开武器页面")
+        })
+        let c2 = this.btnPet!.MouseButton1Down.Connect(() =>
         {
             print("按下宠物按钮")
-        }))
+        })
+
+        this.unBindHandles.push(() =>
+        {
+            c1.Disconnect()
+            c2.Disconnect()
+        })
     }
 
-    private UnBindEvent()
+    public UnBindEvent()
     {
-        this.conns.forEach(conn => conn.Disconnect())
-        this.conns.clear()
+        this.unBindHandles.forEach(h => h())
+        this.unBindHandles.clear()
     }
 }

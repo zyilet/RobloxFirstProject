@@ -2,37 +2,40 @@ import { UIPanel } from "../UIPanel";
 
 export class UIWeaponInfoPanel extends UIPanel
 {
+
     public static Name = "UIWeaponInfoPanel"
 
-    private static isInited: boolean
-    private static ui: ScreenGui
+    private ui?: ScreenGui = undefined
 
-    private static _staticInit = (() =>
-    {
-        this.ui = UIPanel.LoadUIPanel(this.Name)
-        this.ui.Enabled = false
-        this.isInited = true
-    })()
 
-    public OnShow(depth: number): void
+    public OnShow(depth: number, ...params: unknown[]): void
     {
-        UIWeaponInfoPanel.ui.DisplayOrder = depth
-        UIWeaponInfoPanel.ui.Enabled = true
+        this.ui = UIPanel.LoadUIPanel(UIWeaponInfoPanel.Name)
+        this.ui.DisplayOrder = depth
+
+        print(params[0])
     }
     public OnClose(): void
     {
-        UIWeaponInfoPanel.ui.Enabled = false
+
     }
-    public OnCovered(): void
-    {
-    }
-    public OnUnCovered(): void
-    {
-    }
-    
-    public OnUpdate(dt: number): void
+    public BindEvent(): void
     {
 
     }
+    public UnBindEvent(): void
+    {
+
+    }
+
+
+    // private static _staticInit = (() =>
+    // {
+    //     this.ui = UIPanel.LoadUIPanel(this.Name)
+    //     this.ui.Enabled = false
+    //     this.isInited = true
+    // })()
+
+
 
 }

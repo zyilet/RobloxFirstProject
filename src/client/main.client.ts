@@ -1,6 +1,6 @@
 import { KnitClient } from "@rbxts/knit";
 import { ControlSystem } from "./game/ControlManager";
-import { Players, RunService, StarterGui, UserInputService } from "@rbxts/services";
+import { InsertService, Players, RunService, StarterGui, UserInputService, Workspace } from "@rbxts/services";
 import { WaitHumanoidRoot } from "shared/Constants";
 import { Transform } from "shared/Transform";
 import { Connection } from "@rbxts/knit/Knit/Util/Signal";
@@ -9,6 +9,7 @@ import { MessageManager } from "./game/MessageManager/MessageManager";
 import { UIManager } from "./game/UIManager/UIManager";
 import { UILoadingPanel } from "./game/UIManager/UIPanels/UILoadingPanel";
 import { DataManager } from "./game/DataManager/DataManager";
+import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);

@@ -31,6 +31,26 @@ const WeaponService = Knit.CreateService({
         EquipWeapon: new RemoteSignal<(guid: string) => void>(),
         UnEquipWeapon: new RemoteSignal<() => void>(),
         SellWeapon: new RemoteSignal<(guid: string) => void>(),
+
+        EquipWeaponMethod(player: Player, guid: string)
+        {
+            let wa = WeaponManger.GetInstance().CreateAccessor(player)
+
+            wa.EquipWeapon(guid)
+            this.EquippedWeapon.Fire(player, wa.GetEquippedWeapon())
+        },
+        SellWeaponMethod(player: Player, guid: string)
+        {
+            let wa = WeaponManger.GetInstance().CreateAccessor(player)
+            let pa = PlayerDataManager.GetInstance().CreateAccessor(player)
+
+            let wapon = wa.GetWeapon(guid)
+            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).price
+            wa.RemoveWeapon(guid)
+            pa.AddGold(price)
+
+            this.RemoveWeapon.Fire(player, wapon)
+        }
     },
 
     KnitInit()

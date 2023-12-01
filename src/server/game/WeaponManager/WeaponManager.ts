@@ -56,11 +56,15 @@ export class WeaponManger
     public RemoveWeapon(player: Player, guid: string)
     {
         let accessor = this.GetAccessor(player)
+
         if (accessor.GetAllWeapon().find(weapon => weapon.Guid === guid))
         {
             accessor.RemoveWeapon(guid)
         }
-        error(`玩家 ${player.Name} 拥有的武器中找不到guid为 ${guid} 的武器`)
+        else
+        {
+            error(`玩家 ${player.Name} 拥有的武器中找不到guid为 ${guid} 的武器`)
+        }
     }
 
     //获取玩家的所有武器

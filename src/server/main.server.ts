@@ -2,7 +2,7 @@
  * @Author: zyilet zhaoyims@outlook.com
  * @Date: 2023-11-01 13:47:40
  * @LastEditors: zyilet zhaoyims@outlook.com
- * @LastEditTime: 2023-11-30 16:15:18
+ * @LastEditTime: 2023-12-02 10:48:52
  * @FilePath: \RobloxFirstProject\src\server\main.server.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -68,11 +68,11 @@ KnitServer.Start()
             wait(5)
             KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
             KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器2")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器2")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器2")
             KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
-            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
-            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
-            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
-            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器1")
+            KnitServer.GetService("WeaponService").AddWeapon(p, "测试武器2")
         })
     })
     .catch(warn)

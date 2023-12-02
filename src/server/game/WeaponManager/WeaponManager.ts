@@ -9,6 +9,9 @@ export class WeaponManger
         return this.instance ??= new WeaponManger()
     }
 
+    private equipTasks: [player: Player, { (): void }][] = []
+    private equipTools: [player: Player, tool: Tool][] = []
+
     //创建对某一个玩家进行武器相关操作的对象
     public CreateAccessor(player: Player)
     {
@@ -30,8 +33,44 @@ export class WeaponManger
         if (accessor.GetAllWeapon().find(weapon => weapon.Guid === guid))
         {
             accessor.EquipWeapon(guid)
+
+            //显示武器模型
+            task.spawn(() =>
+            {
+                let lastTask = this.equipTasks.remove(this.equipTasks.findIndex(ele => ele[0].UserId === player.UserId))
+                if (lastTask)
+                {
+                    lastTask[1]()
+                }
+                let lastTool = this.equipTools.remove(this.equipTools.findIndex(ele => ele[0].UserId === player.UserId))
+                if (lastTool)
+                {
+                    lastTool[1].Destroy()
+                }
+
+                let canRunning = true
+                this.equipTasks.push([player, () => canRunning = false])
+                while (canRunning && wait())
+                {
+                    let toolAssetId = WeaponConfigCollection.GetConfigById(this.GetWeapon(player, guid).Id).assetId
+                    let char = player.Character
+                    let tool = player.FindFirstChild("Cache")?.FindFirstChild(tostring(toolAssetId))?.Clone() as Tool
+
+                    if (char && tool)
+                    {
+                        tool.Parent = char
+
+                        this.equipTasks.remove(this.equipTasks.findIndex(ele => ele[0].UserId === player.UserId))
+                        this.equipTools.push([player, tool])
+                        break
+                    }
+                }
+            })
         }
-        error(`玩家 ${player.Name} 拥有的武器中找不到guid为 ${guid} 的武器`)
+        else
+        {
+            error(`玩家 ${player.Name} 拥有的武器中找不到guid为 ${guid} 的武器`)
+        }
     }
 
     //取消装备

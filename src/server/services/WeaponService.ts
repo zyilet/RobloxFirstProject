@@ -37,6 +37,7 @@ const WeaponService = Knit.CreateService({
             let wa = WeaponManger.GetInstance().CreateAccessor(player)
 
             wa.EquipWeapon(guid)
+            
             this.EquippedWeapon.Fire(player, wa.GetEquippedWeapon())
         },
         SellWeaponMethod(player: Player, guid: string)
@@ -44,12 +45,12 @@ const WeaponService = Knit.CreateService({
             let wa = WeaponManger.GetInstance().CreateAccessor(player)
             let pa = PlayerDataManager.GetInstance().CreateAccessor(player)
 
-            let wapon = wa.GetWeapon(guid)
+            let weapon = wa.GetWeapon(guid)
             let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).price
             wa.RemoveWeapon(guid)
             pa.AddGold(price)
 
-            this.RemoveWeapon.Fire(player, wapon)
+            this.RemoveWeapon.Fire(player, weapon)
         }
     },
 

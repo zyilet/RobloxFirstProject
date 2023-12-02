@@ -9,7 +9,7 @@ let config: PetConfig[] = [
     {
         id: "测试宠物1",
         name: "测试宠物1",
-        assetId: 15410481875,
+        assetId: 15518335103,
         ratio: 2
     }
 ]

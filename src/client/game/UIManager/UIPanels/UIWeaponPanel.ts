@@ -30,6 +30,7 @@ export class UIWeaponPanel extends UIPanel
     private toolCache: ToolCache[] = []
 
     private unBindHandle: (() => void)[] = []
+    private messageGuid: string[] = []
     private openWeaponInfoPanel: ((data: PlayerWeaponData) => void) | undefined = undefined
 
     public OnShow(depth: number, ...params: unknown[]): void
@@ -39,6 +40,8 @@ export class UIWeaponPanel extends UIPanel
 
     public OnClose(): void
     {
+        this.messageGuid.forEach(guid => MessageManager.GetInstance().UnSubscribe(guid))
+        this.messageGuid.clear()
         this.ui?.Destroy()
     }
 
@@ -53,20 +56,6 @@ export class UIWeaponPanel extends UIPanel
         this.boxWeapon = elements.find(ele => ele.Name === "BoxWeapon") as ScrollingFrame
         this.RenderWeapons()
     }
-
-    // private Init()
-    // {
-    //     let elements = UIWeaponPanel.ui.GetDescendants()
-    //     this.btnQuit = elements.find(ele => ele.Name === "BtnQuit") as TextButton
-    //     this.boxWeapon = elements.find(ele => ele.Name === "BoxWeapon") as ScrollingFrame
-    //     this.RenderWeapons()
-
-    //     let conn = this.btnQuit?.MouseButton1Down.Connect(() =>
-    //     {
-    //         UIManager.GetInstance().Close(UIWeaponPanel)
-    //         conn?.Disconnect()
-    //     })
-    // }
 
     public BindEvent()
     {
@@ -135,6 +124,8 @@ export class UIWeaponPanel extends UIPanel
 
     private RenderWeapons()
     {
+        this.itemWeapons = []
+
         let weapons = DataManager.GetInstance().GetAllWeapons()
         let equippedWeapon = DataManager.GetInstance().GetEquippedWeapon()
         weapons.forEach(weapon =>
@@ -145,7 +136,7 @@ export class UIWeaponPanel extends UIPanel
             uiEle.Parent = this.boxWeapon
         })
 
-        MessageManager.GetInstance().Subscribe(Messages.AddWeapon, data =>
+        let mid1 = MessageManager.GetInstance().Subscribe(Messages.AddWeapon, data =>
         {
             let weapon = data as PlayerWeaponData
 
@@ -156,7 +147,7 @@ export class UIWeaponPanel extends UIPanel
             uiEle.Parent = this.boxWeapon
         })
 
-        MessageManager.GetInstance().Subscribe(Messages.RemoveWeapon, data =>
+        let mid2 = MessageManager.GetInstance().Subscribe(Messages.RemoveWeapon, data =>
         {
             let weapon = data as PlayerWeaponData
 
@@ -166,14 +157,18 @@ export class UIWeaponPanel extends UIPanel
             this.itemWeapons.remove(index)
         })
 
-        MessageManager.GetInstance().Subscribe(Messages.EquipWeapon, data =>
+        let mid3 = MessageManager.GetInstance().Subscribe(Messages.EquipWeapon, data =>
         {
-            let equippedWeapon = data as PlayerWeaponData
+            let guid = data as string
             this.itemWeapons.forEach(([weapon, uiEle]) =>
             {
                 let textIsEquipped = uiEle.GetDescendants().find(ele => ele.Name === "TextIsEquipped") as TextLabel
-                textIsEquipped.Visible = weapon.Guid === equippedWeapon.Guid
+                textIsEquipped.Visible = weapon.Guid === guid
             })
         })
+
+        this.messageGuid.push(mid1)
+        this.messageGuid.push(mid2)
+        this.messageGuid.push(mid3)
     }
 }

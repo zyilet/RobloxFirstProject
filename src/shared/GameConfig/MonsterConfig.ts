@@ -21,7 +21,7 @@ export class MonsterConfigCollection
             id: "测试怪物1",
             name: "测试怪物1",
             hp: 1000,
-            assetID: 15296980369,
+            assetID: 15518343871,
             reward: [
                 {
                     weight: 10,
@@ -40,7 +40,7 @@ export class MonsterConfigCollection
             id: "测试怪物2",
             name: "测试怪物2",
             hp: 10000,
-            assetID: 15296980369,
+            assetID: 15518343871,
             reward: [
                 {
                     weight: 40,

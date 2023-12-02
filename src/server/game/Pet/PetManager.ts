@@ -41,7 +41,7 @@ export class PetManager
 
     public Update(dt: number)
     {
-        for (const [plaeyr, pet] of this.playerPets)
+        for (const [player, pet] of this.playerPets)
         {
             pet.Update(dt)
         }

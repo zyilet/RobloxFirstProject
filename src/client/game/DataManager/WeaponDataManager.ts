@@ -44,7 +44,6 @@ export class WeaponDataManager
         WeaponService.EquippedWeapon.Connect(data =>
         {
             this.equippedWeapon = data
-
             MessageManager.GetInstance().Publish(Messages.EquipWeapon, data)
         })
         return this

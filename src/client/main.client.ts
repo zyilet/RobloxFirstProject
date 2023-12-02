@@ -10,6 +10,7 @@ import { UIManager } from "./game/UIManager/UIManager";
 import { UILoadingPanel } from "./game/UIManager/UIPanels/UILoadingPanel";
 import { DataManager } from "./game/DataManager/DataManager";
 import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
+import { ScaledButton } from "./game/UIManager/UIElements/ScaledButton";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
@@ -26,6 +27,17 @@ KnitClient.Start()
         {
             gameManager.Update(dt)
         })
+
+
+        let testButton = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("TestUI").WaitForChild("BtnClose") as Frame
+
+        let btn = new ScaledButton(testButton)
+
+        btn.OnClick.Add(() =>
+        {
+            print("点击按钮")
+        })
+
     })
     .catch(warn)
 

@@ -1,5 +1,6 @@
 import { UIManager } from "../UIManager";
 import { UIPanel } from "../UIPanel";
+import { WeaponPanel } from "../WeaponPanel/WeaponPanel";
 import { UIWeaponPanel } from "./UIWeaponPanel";
 
 export class UIMainPanel extends UIPanel
@@ -38,7 +39,7 @@ export class UIMainPanel extends UIPanel
         let c1 = this.btnWeapon!.MouseButton1Down.Connect(() =>
         {
             print("按下武器按钮")
-            UIManager.GetInstance().Open(UIWeaponPanel, "打开武器页面")
+            UIManager.GetInstance().Open(WeaponPanel)
         })
         let c2 = this.btnPet!.MouseButton1Down.Connect(() =>
         {

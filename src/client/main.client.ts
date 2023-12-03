@@ -27,17 +27,6 @@ KnitClient.Start()
         {
             gameManager.Update(dt)
         })
-
-
-        let testButton = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("TestUI").WaitForChild("BtnClose") as Frame
-
-        let btn = new ScaledButton(testButton)
-
-        btn.OnClick.Add(() =>
-        {
-            print("点击按钮")
-        })
-
     })
     .catch(warn)
 

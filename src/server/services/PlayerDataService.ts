@@ -56,9 +56,10 @@ const PlayerDataService = Knit.CreateService(
             this.Client.AddAttackValue.Connect(player =>
             {
                 let accessor = GameDataManager.GetInstance().GetPlayerDataAccessor(player)
-                let curWeaponId = accessor.GetCurEquipWeapon()
+                let curWeaponIds = accessor.GetCurEquipWeapon()
                 let curAttackValue = accessor.GetAttack()
-                let newAttackValue = curAttackValue + (curWeaponId ? WeaponConfigCollection.GetConfigById(curWeaponId).strength : 1);
+                let addAttack = curWeaponIds.reduce((sum, ele) => sum + WeaponConfigCollection.GetConfigById(ele).Strength, 1)
+                let newAttackValue = curAttackValue + addAttack
 
                 accessor.SetAttack(newAttackValue)
 

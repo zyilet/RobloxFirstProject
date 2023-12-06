@@ -71,8 +71,8 @@ export class UIWeaponInfoPanel extends UIPanel
     private RenderUI()
     {
         let weaponConfig = WeaponConfigCollection.GetConfigById(this.weaponData!.Id)
-        this.textAtk!.Text = tostring(weaponConfig.strength)
-        this.textPrice!.Text = tostring(weaponConfig.price)
+        this.textAtk!.Text = tostring(weaponConfig.Strength)
+        this.textPrice!.Text = tostring(weaponConfig.Price)
     }
 
 

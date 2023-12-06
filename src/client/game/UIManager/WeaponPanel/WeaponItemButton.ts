@@ -12,6 +12,8 @@ export class WeaponItemButton extends ScalableButton
     private imgEquip: ImageLabel
     private viewPort: ViewportFrame
 
+    public Selected: boolean
+
     constructor(root: Frame)
     {
         super(root)
@@ -28,11 +30,19 @@ export class WeaponItemButton extends ScalableButton
         camera.Parent = this.viewPort
         camera.CFrame = new CFrame(new Vector3(0, 2, 8))
         this.viewPort.CurrentCamera = camera
+
+        this.Selected = false
+    }
+
+    public SetListOrder(number: number)
+    {
+        this.root.LayoutOrder = number
     }
 
     public SetSelected(value: boolean)
     {
         this.imgSelected.Visible = value
+        this.Selected = value
     }
 
     public SetEquipState(value: boolean)
@@ -51,22 +61,22 @@ export class WeaponItemButton extends ScalableButton
 
         let config = WeaponConfigCollection.GetConfigById(weaponId)
 
-        this.textName.Text = config.name
+        this.textName.Text = config.Name
 
         task.spawn(() =>
         {
             //等待1帧，避免父对象在当前帧没有设置上导致加载while循环进不去的问题
             wait()
 
-            let toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.assetId)) as Tool
+            let toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.AssetId)) as Tool
             if (!toolCache)
             {
-                KnitClient.GetService("LoadAssetsService").LoadAsset.Fire(config.assetId)
+                KnitClient.GetService("LoadAssetsService").LoadAsset.Fire(config.AssetId)
             }
 
             while (this.root.IsDescendantOf(Players.LocalPlayer) && wait())
             {
-                toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.assetId)) as Tool
+                toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.AssetId)) as Tool
                 if (toolCache)
                 {
                     let tool = toolCache.Clone()

@@ -1,28 +1,28 @@
 export type WeaponConfig = {
-    id: string,
-    assetId: number,
-    name: string,
-    strength: number,
-    quality: "Normal" | "Rare"
-    price: number
+    Id: string,
+    AssetId: number,
+    Name: string,
+    Strength: number,
+    Quality: "Normal" | "Rare"
+    Price: number
 }
 
 let config: WeaponConfig[] = [
     {
-        id: "测试武器1",
-        name: "测试武器1",
-        strength: 10,
-        quality: "Normal",
-        price: 100,
-        assetId: 15493679873,
+        Id: "测试武器1",
+        Name: "测试武器1",
+        Strength: 10,
+        Quality: "Normal",
+        Price: 100,
+        AssetId: 15493679873,
     },
     {
-        id: "测试武器2",
-        name: "测试武器2",
-        strength: 100,
-        quality: "Rare",
-        price: 200,
-        assetId: 15493696236,
+        Id: "测试武器2",
+        Name: "测试武器2",
+        Strength: 100,
+        Quality: "Rare",
+        Price: 200,
+        AssetId: 15493696236,
     }
 ]
 
@@ -37,7 +37,7 @@ export class WeaponConfigCollection
 
     public static GetConfigById(id: string)
     {
-        let config = this._configs.filter(config => config.id === id).pop();
+        let config = this._configs.filter(config => config.Id === id).pop();
         return config ? config : error("没有和传入id相匹配的配置数据")
     }
 }

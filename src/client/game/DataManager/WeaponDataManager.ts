@@ -16,7 +16,7 @@ export class WeaponDataManager
     }
 
     private allWeapons: PlayerWeaponData[] = []
-    private equippedWeapon: string | undefined = undefined
+    private equippedWeapon: string[] = []
 
     public Init()
     {

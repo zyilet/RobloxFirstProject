@@ -26,7 +26,7 @@ const WeaponService = Knit.CreateService({
         //玩家武器移除
         RemoveWeapon: new RemoteSignal<(weapon: PlayerWeaponData) => void>(),
         //玩家装备的武器
-        EquippedWeapon: new RemoteSignal<(guid: string | undefined) => void>(),
+        EquippedWeapon: new RemoteSignal<(guid: string[]) => void>(),
 
         EquipWeapon: new RemoteSignal<(guid: string) => void>(),
         UnEquipWeapon: new RemoteSignal<() => void>(),
@@ -37,16 +37,29 @@ const WeaponService = Knit.CreateService({
             let wa = WeaponManger.GetInstance().CreateAccessor(player)
 
             wa.EquipWeapon(guid)
-            
+
+            this.EquippedWeapon.Fire(player, wa.GetEquippedWeapon())
+        },
+        UnequipWeaponMethod(player: Player, guid: string)
+        {
+            let wa = WeaponManger.GetInstance().CreateAccessor(player)
+
+            wa.UnEquipWeapon(guid)
             this.EquippedWeapon.Fire(player, wa.GetEquippedWeapon())
         },
         SellWeaponMethod(player: Player, guid: string)
         {
+
             let wa = WeaponManger.GetInstance().CreateAccessor(player)
             let pa = PlayerDataManager.GetInstance().CreateAccessor(player)
 
+            if (wa.GetEquippedWeapon().find(ele => ele === guid)) 
+            {
+                return
+            }
+
             let weapon = wa.GetWeapon(guid)
-            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).price
+            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).Price
             wa.RemoveWeapon(guid)
             pa.AddGold(price)
 
@@ -76,20 +89,20 @@ const WeaponService = Knit.CreateService({
             this.Client.EquippedWeapon.Fire(p, wa.GetEquippedWeapon())
         })
 
-        this.Client.UnEquipWeapon.Connect(p =>
-        {
-            let wa = WeaponManger.GetInstance().CreateAccessor(p)
+        // this.Client.UnEquipWeapon.Connect(p =>
+        // {
+        //     let wa = WeaponManger.GetInstance().CreateAccessor(p)
 
-            wa.UnEquipWeapon()
-            this.Client.EquippedWeapon.Fire(p, undefined)
-        })
+        //     wa.UnEquipWeapon()
+        //     this.Client.EquippedWeapon.Fire(p, undefined)
+        // })
 
         this.Client.SellWeapon.Connect((p, guid) =>
         {
             let wa = WeaponManger.GetInstance().CreateAccessor(p)
             let pa = PlayerDataManager.GetInstance().CreateAccessor(p)
 
-            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).price
+            let price = WeaponConfigCollection.GetConfigById(wa.GetWeapon(guid).Id).Price
             wa.RemoveWeapon(guid)
             pa.AddGold(price)
         })

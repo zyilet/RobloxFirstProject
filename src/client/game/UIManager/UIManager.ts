@@ -1,3 +1,5 @@
+import { PlayerWeaponData } from "../DataManager/WeaponDataManager";
+import { ObtainWeaponPanel } from "./ObtainWeaponPanel/ObtainWeaponPanel";
 import { UIPanel } from "./UIPanel";
 import { UIPanelStack } from "./UIPanelStack";
 
@@ -23,9 +25,20 @@ export class UIManager
             let [name, panel] = this.uiPanelStack.Peek()
             panel.OnUpdate(dt)
         }
+
+        if (this.obtainWeaponPanel)
+        {
+            this.obtainWeaponPanel.Update(dt)
+            if (this.obtainWeaponPanel.ShowTime >= 3)
+            {
+                this.obtainWeaponPanel.Destroy()
+                this.obtainWeaponPanel = undefined
+            }
+        }
     }
 
     private uiPanelStack: UIPanelStack = new UIPanelStack()
+    private obtainWeaponPanel: ObtainWeaponPanel | undefined
 
     public Open<T extends UIPanel>(UIPanel: { new(): T, Name: string }, ...params: unknown[])
     {
@@ -63,6 +76,16 @@ export class UIManager
                 return
             }
         }
+    }
+
+    public OpenShowNewWeapon(weaponData: PlayerWeaponData)
+    {
+        if (this.obtainWeaponPanel)
+        {
+            this.obtainWeaponPanel.Destroy()
+        }
+        this.obtainWeaponPanel = new ObtainWeaponPanel(weaponData)
+        this.obtainWeaponPanel.Show()
     }
 
     public IsOpening<T extends UIPanel>(UIPanel: { new(): T, Name: string })

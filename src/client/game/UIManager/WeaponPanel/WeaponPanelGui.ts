@@ -3,6 +3,8 @@ import { ScalableButton } from "../Base/ScalableButton"
 import { Subscribable, SubscribableWithParam, UIParamEvent } from "../UIEvent"
 import { UITools } from "../UITools"
 import { WeaponItemButton } from "./WeaponItemButton"
+import { DataManager } from "client/game/DataManager/DataManager"
+import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig"
 
 type WeaponItemClickParam = {
     Guid: string,
@@ -10,11 +12,7 @@ type WeaponItemClickParam = {
     Buttons: WeaponItemButton[]
 }
 
-enum WeaponPanelState
-{
-    Normal = "normal",
-    MultiSell = "multi sell"
-}
+export type WeaponPanelState = "normal" | "multi sell"
 
 export class WeaponPanelGui
 {
@@ -42,7 +40,7 @@ export class WeaponPanelGui
     public OnCloseClick: Subscribable
     public OnWeaponItemClick: SubscribableWithParam<WeaponItemClickParam>
 
-    private uiState: WeaponPanelState = WeaponPanelState.Normal
+    private uiState: WeaponPanelState = "normal"
 
     constructor(weaponGuidList: string[] = [])
     {
@@ -75,13 +73,12 @@ export class WeaponPanelGui
         this.outerUIScale.Scale = Workspace.CurrentCamera!.ViewportSize.Y / 1080
 
         weaponGuidList.forEach(guid => this.AddWeaponItem(guid))
+        this.EquipWeapon(DataManager.GetInstance().GetEquippedWeapon())
     }
 
     //向列表中添加武器
     public AddWeaponItem(guid: string)
     {
-        print("添加武器")
-
         if (this.weaponItems.has(guid)) error(`列表中已经存在guid为【${guid}】的武器`)
 
         let weaponButton = new WeaponItemButton(UITools.LoadEle<Frame>("BtnWeaponItem"))
@@ -99,6 +96,8 @@ export class WeaponPanelGui
 
         this.buttons.push(weaponButton)
         this.weaponItems.set(guid, weaponButton)
+
+        this.ReOrderWeaponItems()
     }
 
     //从列表中删除武器
@@ -111,11 +110,17 @@ export class WeaponPanelGui
     }
 
     //装备武器
-    public EquipWeapon(guid: string)
+    public EquipWeapon(guids: string[])
     {
-        if (!this.weaponItems.has(guid)) error(`列表中不存在guid为【${guid}】的武器`)
+        this.weaponItems.forEach(button => button.SetEquipState(false))
 
-        this.weaponItems.get(guid)?.SetEquipState(true)
+        guids.forEach(guid =>
+        {
+            if (!this.weaponItems.has(guid)) error(`列表中不存在guid为【${guid}】的武器`)
+
+            this.weaponItems.get(guid)?.SetEquipState(true)
+            this.ReOrderWeaponItems()
+        })
     }
 
     //选择武器
@@ -124,11 +129,26 @@ export class WeaponPanelGui
         if (!this.weaponItems.has(guid)) error(`列表中不存在guid为【${guid}】的武器`)
 
         //如果是普通模式，就先取消其他武器的选择状态
-        if (this.uiState === WeaponPanelState.Normal)
+        if (this.uiState === "normal")
         {
-            this.weaponItems.forEach(button => button.SetSelected(false))
+            this.weaponItems.forEach((button, buttonGuid) =>
+            {
+                if (buttonGuid === guid)
+                    return
+                button.SetSelected(false)
+            })
         }
-        this.weaponItems.get(guid)?.SetSelected(true)
+        let button = this.weaponItems.get(guid)!
+        button.SetSelected(!button.Selected)
+    }
+
+    public SelectAllWeapon()
+    {
+        this.weaponItems.forEach(button => button.SetSelected(true))
+
+        let result: string[] = []
+        this.weaponItems.forEach((_, guid) => result.push(guid))
+        return result
     }
 
     //设置武器数量上限
@@ -146,19 +166,32 @@ export class WeaponPanelGui
     //设置页面显示状态（普通模式或者多选出售模式）
     public SetPanelState(state: WeaponPanelState)
     {
-        if (state === WeaponPanelState.Normal)
+        this.uiState = state
+
+        this.weaponItems.forEach(item => item.SetSelected(false))
+
+        let equippedIds = DataManager.GetInstance().GetEquippedWeapon()
+
+        if (state === "normal")
         {
             this.textBlueButton.Text = "Equip Best"
             this.textOrangeButton.Text = "Unequip All"
             this.textRedButton.Text = "Multi Sell"
+
+            equippedIds.forEach(guid => this.AddWeaponItem(guid))
+            this.EquipWeapon(equippedIds)
+            this.ReOrderWeaponItems()
+
             return
         }
 
-        if (state === WeaponPanelState.MultiSell)
+        if (state === "multi sell")
         {
             this.textBlueButton.Text = "Select All"
             this.textOrangeButton.Text = "Cancel"
             this.textRedButton.Text = "Sell"
+
+            equippedIds.forEach(guid => this.RemoveWeaponItem(guid))
             return
         }
     }
@@ -196,5 +229,25 @@ export class WeaponPanelGui
     public Destroy()
     {
         this.gui.Destroy()
+    }
+
+    private ReOrderWeaponItems()
+    {
+        let itemArr: [attackValue: number, item: WeaponItemButton, guid: string][] = []
+        this.weaponItems.forEach((item, guid) =>
+        {
+            let weapon = DataManager.GetInstance().GetWeapon(guid)
+            let config = WeaponConfigCollection.GetConfigById(weapon.Id)
+            itemArr.push([config.Strength, item, guid])
+        })
+
+        itemArr = itemArr.sort((left, right) => left[0] > right[0])
+        itemArr.forEach(([_, item, guid], index) =>
+        {
+            let equippedWeapon = DataManager.GetInstance().GetEquippedWeapon()
+
+            let isEquipped = equippedWeapon.find(ele => ele === guid)
+            item.SetListOrder(isEquipped ? 0 : index + 1)
+        })
     }
 }

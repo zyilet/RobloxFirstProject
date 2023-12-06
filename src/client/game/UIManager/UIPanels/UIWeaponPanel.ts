@@ -101,15 +101,15 @@ export class UIWeaponPanel extends UIPanel
 
         task.spawn(() =>
         {
-            let toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.assetId)) as Tool
+            let toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.AssetId)) as Tool
             if (!toolCache)
             {
-                KnitClient.GetService("LoadAssetsService").LoadAsset.Fire(config.assetId)
+                KnitClient.GetService("LoadAssetsService").LoadAsset.Fire(config.AssetId)
             }
 
             while (this.ui?.IsDescendantOf(Players.LocalPlayer) && wait())
             {
-                toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.assetId)) as Tool
+                toolCache = Players.LocalPlayer.WaitForChild("Cache").FindFirstChild(tostring(config.AssetId)) as Tool
                 if (toolCache)
                 {
                     let tool = toolCache.Clone()
@@ -131,7 +131,7 @@ export class UIWeaponPanel extends UIPanel
         weapons.forEach(weapon =>
         {
             let weaponConfig = WeaponConfigCollection.GetConfigById(weapon.Id)
-            let uiEle = this.CreateWeaponItem(weapon, weapon.Guid === equippedWeapon)
+            let uiEle = this.CreateWeaponItem(weapon, equippedWeapon.find(ele => ele === weapon.Guid) !== undefined)
             this.itemWeapons.push([weapon, uiEle])
             uiEle.Parent = this.boxWeapon
         })

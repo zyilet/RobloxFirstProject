@@ -29,6 +29,13 @@ export class DataManager
         return this.weaponManger!.GetAllWeapons()
     }
 
+    public GetWeapon(guid: string)
+    {
+        let result = this.weaponManger!.GetAllWeapons().find(ele => ele.Guid === guid)
+        if (result === undefined) error(`找不到guid为【${guid}】的武器`)
+        return result
+    }
+
     public GetBestWeapon()
     {
         let weapons = this.weaponManger?.GetAllWeapons()
@@ -37,13 +44,13 @@ export class DataManager
             return undefined
         }
 
-        let result = weapons.pop()!
+        let result = weapons[0]
 
         weapons.forEach(weapon =>
         {
             let targetConfig = WeaponConfigCollection.GetConfigById(result.Id)
             let curConfig = WeaponConfigCollection.GetConfigById(weapon.Id)
-            if (curConfig.strength > targetConfig.strength)
+            if (curConfig.Strength > targetConfig.Strength)
             {
                 result = weapon
             }

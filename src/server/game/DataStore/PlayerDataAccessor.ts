@@ -9,12 +9,16 @@ export class PlayerDataAccessor
     private _data: PlayerData;
     private _player: Player;
 
+    public Data: PlayerData
+
     constructor(player: Player, data: PlayerData, dataStore: DataStore)
     {
         this._data = data;
         this._store = dataStore;
         this._player = player;
         this._storeKey = `player_data_${this._data.UserId}`
+
+        this.Data = this._data
     }
 
     public SaveAsync()
@@ -82,9 +86,14 @@ export class PlayerDataAccessor
     {
         return this._data.Weapons;
     }
-    public EquipWeapon(guid: string | undefined)
+    public EquipWeapon(guid: string)
     {
-        this._data.EquippedWeapon = guid;
+        this._data.EquippedWeapon.push(guid)
+    }
+    public UnequipWeapon(guid: string)
+    {
+        let index = this._data.EquippedWeapon.findIndex(equipped => equipped === guid)
+        this._data.EquippedWeapon.remove(index)
     }
     public AddWeapon(weaponId: string)
     {
@@ -114,11 +123,11 @@ export class PlayerDataAccessor
     }
     public EquipPet(guid: string)
     {
-        this._data.EquipPets.push(guid)
+        this._data.EquippedPets.push(guid)
     }
     public UnEquipPet(guid: string)
     {
-        this._data.EquipPets = this._data.EquipPets.filter(petGuid => petGuid !== guid)
+        this._data.EquippedPets = this._data.EquippedPets.filter(petGuid => petGuid !== guid)
     }
     public RemovePet(guid: string)
     {

@@ -9,15 +9,15 @@ export class WeaponManger
         return this.instance ??= new WeaponManger()
     }
 
-    private equipTasks: [player: Player, { (): void }][] = []
-    private equipTools: [player: Player, tool: Tool][] = []
+    private equipTasks: [player: Player, task: { (): void }, guid: string][] = []
+    private equipTools: [player: Player, tool: Tool, guid: string][] = []
 
     //创建对某一个玩家进行武器相关操作的对象
     public CreateAccessor(player: Player)
     {
         return {
             EquipWeapon: (guid: string) => this.EquipWeapon(player, guid),
-            UnEquipWeapon: () => this.UnEquipWeapon(player),
+            UnEquipWeapon: (guid: string) => this.UnEquipWeapon(player, guid),
             AddWeapon: (weaponId: string) => this.AddWeapon(player, weaponId),
             RemoveWeapon: (guid: string) => this.RemoveWeapon(player, guid),
             GetAllWeapon: () => this.GetAllWeapon(player),
@@ -49,10 +49,10 @@ export class WeaponManger
                 }
 
                 let canRunning = true
-                this.equipTasks.push([player, () => canRunning = false])
+                this.equipTasks.push([player, () => canRunning = false, guid])
                 while (canRunning && wait())
                 {
-                    let toolAssetId = WeaponConfigCollection.GetConfigById(this.GetWeapon(player, guid).Id).assetId
+                    let toolAssetId = WeaponConfigCollection.GetConfigById(this.GetWeapon(player, guid).Id).AssetId
                     let char = player.Character
                     let tool = player.FindFirstChild("Cache")?.FindFirstChild(tostring(toolAssetId))?.Clone() as Tool
 
@@ -61,7 +61,7 @@ export class WeaponManger
                         tool.Parent = char
 
                         this.equipTasks.remove(this.equipTasks.findIndex(ele => ele[0].UserId === player.UserId))
-                        this.equipTools.push([player, tool])
+                        this.equipTools.push([player, tool, guid])
                         break
                     }
                 }
@@ -74,16 +74,27 @@ export class WeaponManger
     }
 
     //取消装备
-    public UnEquipWeapon(player: Player)
+    public UnEquipWeapon(player: Player, guid: string)
     {
+
+        let lastTask = this.equipTasks.remove(this.equipTasks.findIndex(ele => ele[0].UserId === player.UserId && ele[2] === guid))
+        if (lastTask)
+        {
+            lastTask[1]()
+        }
+        let lastTool = this.equipTools.remove(this.equipTools.findIndex(ele => ele[0].UserId === player.UserId && ele[2] === guid))
+        if (lastTool)
+        {
+            lastTool[1].Destroy()
+        }
         this.GetAccessor(player)
-            .EquipWeapon(undefined)
+            .UnequipWeapon(guid)
     }
 
     //增加武器
     public AddWeapon(player: Player, weaponId: string)
     {
-        if (WeaponConfigCollection.GetAllConfig().find(config => config.id === weaponId))
+        if (WeaponConfigCollection.GetAllConfig().find(config => config.Id === weaponId))
         {
             let weapon = this.GetAccessor(player).AddWeapon(weaponId)
             return weapon

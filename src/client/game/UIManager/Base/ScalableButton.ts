@@ -27,6 +27,11 @@ export class ScalableButton
         this.InitDE()
     }
 
+    public SetVisible(flag: boolean)
+    {
+        this.root.Visible = flag
+    }
+
     public SetInteroperable(flag: boolean)
     {
         this.clickMask.Visible = flag

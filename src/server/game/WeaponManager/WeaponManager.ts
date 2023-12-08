@@ -21,6 +21,7 @@ export class WeaponManger
             AddWeapon: (weaponId: string) => this.AddWeapon(player, weaponId),
             RemoveWeapon: (guid: string) => this.RemoveWeapon(player, guid),
             GetAllWeapon: () => this.GetAllWeapon(player),
+            GetWeaponLimit: () => this.GetWeaponLimit(player),
             GetWeapon: (guid: string) => this.GetWeapon(player, guid),
             GetEquippedWeapon: () => this.GetEquippedWeapon(player),
         }
@@ -121,6 +122,12 @@ export class WeaponManger
     public GetAllWeapon(player: Player)
     {
         return this.GetAccessor(player).GetAllWeapon()
+    }
+
+    //获取玩家武器库存上限
+    public GetWeaponLimit(player: Player)
+    {
+        return this.GetAccessor(player).GetWeaponLimit()
     }
 
     //获取指定武器

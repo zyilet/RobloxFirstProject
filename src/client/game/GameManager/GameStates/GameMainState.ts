@@ -4,6 +4,8 @@ import { GameStateKeys } from "./StateKeys";
 import { UIManager } from "client/game/UIManager/UIManager";
 import { UIMainPanel } from "client/game/UIManager/UIPanels/UIMainPanel";
 import { WeaponDataManager } from "client/game/DataManager/WeaponDataManager";
+import { UserInputService } from "@rbxts/services";
+import { ConfirmPanel, ConfirmPanelParam } from "client/game/UIManager/ConfirmPanel/ConfirmPanel";
 
 export class GameMainState extends FsmStateBase<GameManager, GameStateKeys>
 {
@@ -14,6 +16,24 @@ export class GameMainState extends FsmStateBase<GameManager, GameStateKeys>
     OnEntry(): void
     {
         UIManager.GetInstance().Open(UIMainPanel)
+
+        UserInputService.InputEnded.Connect(input =>
+        {
+            if (input.KeyCode === Enum.KeyCode.P)
+            {
+                UIManager.GetInstance().Open(ConfirmPanel, new ConfirmPanelParam(
+                    "测试",
+                    () =>
+                    {
+                        print("confirm")
+                    },
+                    () =>
+                    {
+                        print("close")
+                    }
+                ))
+            }
+        })
     }
     private timer = 0
     OnUpdate(dt: number): void

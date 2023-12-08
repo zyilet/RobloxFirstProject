@@ -88,7 +88,7 @@ export class WeaponPanel extends UIPanel
 
     public UnBindEvent(): void
     {
-        this.disposablePack.Disposable()
+        this.disposablePack.Dispose()
     }
 
     private InitMessage()

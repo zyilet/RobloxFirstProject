@@ -1,5 +1,9 @@
-import { PlayerWeaponData } from "../DataManager/WeaponDataManager";
+import { DataManager } from "../DataManager/DataManager";
+import { PlayerWeaponData, WeaponDataManager } from "../DataManager/WeaponDataManager";
+import { Messages } from "../MessageManager/MessageDefine";
+import { MessageManager } from "../MessageManager/MessageManager";
 import { ObtainWeaponPanel } from "./ObtainWeaponPanel/ObtainWeaponPanel";
+import { TipsPanel } from "./TipsPanel/TipsPanel";
 import { UIPanel } from "./UIPanel";
 import { UIPanelStack } from "./UIPanelStack";
 
@@ -12,9 +16,23 @@ export class UIManager
         return this.instance ??= new UIManager()
     }
 
+
+    private uiPanelStack: UIPanelStack = new UIPanelStack()
+    private obtainWeaponPanel: ObtainWeaponPanel | undefined
+    private tipsPanel: TipsPanel | undefined
+
     public Init()
     {
+        MessageManager.GetInstance().Subscribe(Messages.AddWeapon, data =>
+        {
+            let weapon = data as PlayerWeaponData
+            this.ShowNewWeapon(weapon)
+        })
 
+        MessageManager.GetInstance().Subscribe(Messages.WeaponLimit, () =>
+        {
+            this.ShowTips("The weapon inventory is full!, please sell some weapons.")
+        })
         return this
     }
 
@@ -31,14 +49,20 @@ export class UIManager
             this.obtainWeaponPanel.Update(dt)
             if (this.obtainWeaponPanel.ShowTime >= 3)
             {
-                this.obtainWeaponPanel.Destroy()
+                this.obtainWeaponPanel.Hide()
                 this.obtainWeaponPanel = undefined
             }
         }
-    }
 
-    private uiPanelStack: UIPanelStack = new UIPanelStack()
-    private obtainWeaponPanel: ObtainWeaponPanel | undefined
+        if (this.tipsPanel)
+        {
+            if (this.tipsPanel.GetCurTipsCount() <= 0)
+            {
+                this.tipsPanel.Destroy()
+                this.tipsPanel = undefined
+            }
+        }
+    }
 
     public Open<T extends UIPanel>(UIPanel: { new(): T, Name: string }, ...params: unknown[])
     {
@@ -63,7 +87,7 @@ export class UIManager
         while (this.uiPanelStack.GetDepth() > 0)
         {
             let [name, panel] = this.uiPanelStack.Pop()
-            panel.Close()
+            let data = panel.Close()
 
             if (this.uiPanelStack.GetDepth() > 0)
             {
@@ -78,7 +102,7 @@ export class UIManager
         }
     }
 
-    public OpenShowNewWeapon(weaponData: PlayerWeaponData)
+    public ShowNewWeapon(weaponData: PlayerWeaponData)
     {
         if (this.obtainWeaponPanel)
         {
@@ -86,6 +110,17 @@ export class UIManager
         }
         this.obtainWeaponPanel = new ObtainWeaponPanel(weaponData)
         this.obtainWeaponPanel.Show()
+    }
+
+    public ShowTips(info: string, color: Color3 | undefined = undefined)
+    {
+        if (!color)
+        {
+            color = Color3.fromHex("aa0000")
+        }
+
+        this.tipsPanel ??= new TipsPanel()
+        this.tipsPanel.ShowTip(info, color)
     }
 
     public IsOpening<T extends UIPanel>(UIPanel: { new(): T, Name: string })

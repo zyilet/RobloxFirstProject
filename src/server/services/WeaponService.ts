@@ -27,6 +27,8 @@ const WeaponService = Knit.CreateService({
         RemoveWeapon: new RemoteSignal<(weapon: PlayerWeaponData) => void>(),
         //玩家装备的武器
         EquippedWeapon: new RemoteSignal<(guid: string[]) => void>(),
+        //玩家武器库存达到上限
+        WeaponLimit: new RemoteSignal<() => void>(),
 
         EquipWeapon: new RemoteSignal<(guid: string) => void>(),
         UnEquipWeapon: new RemoteSignal<() => void>(),
@@ -111,6 +113,12 @@ const WeaponService = Knit.CreateService({
     AddWeapon(player: Player, weaponId: string)
     {
         let wa = WeaponManger.GetInstance().CreateAccessor(player)
+
+        if (wa.GetAllWeapon().size() >= wa.GetWeaponLimit())
+        {
+            this.Client.WeaponLimit.Fire(player)
+            return
+        }
 
         let weapon = wa.AddWeapon(weaponId)
         this.Client.AddWeapon.Fire(player, weapon)

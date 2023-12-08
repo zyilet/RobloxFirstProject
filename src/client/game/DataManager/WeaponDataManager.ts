@@ -1,6 +1,7 @@
 import { KnitClient } from "@rbxts/knit"
 import { MessageManager } from "../MessageManager/MessageManager"
 import { Messages } from "../MessageManager/MessageDefine"
+import { UIManager } from "../UIManager/UIManager"
 
 export type PlayerWeaponData = {
     Guid: string,
@@ -45,6 +46,11 @@ export class WeaponDataManager
         {
             this.equippedWeapon = data
             MessageManager.GetInstance().Publish(Messages.EquipWeapon, data)
+        })
+
+        WeaponService.WeaponLimit.Connect(() =>
+        {
+            MessageManager.GetInstance().Publish(Messages.WeaponLimit)
         })
         return this
     }

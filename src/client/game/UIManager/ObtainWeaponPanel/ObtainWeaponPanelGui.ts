@@ -25,6 +25,7 @@ export class ObtainWeaponPanelGui
     {
         this.weaponData = weaponData
         this.gui = UITools.LoadGui("ObtainWeaponPanel")
+        this.gui.DisplayOrder = 100
 
         this.fitScale = UITools.FindEle(this.gui, "FitScale")
         this.fadeScale = UITools.FindEle(this.gui, "FadeScale")
@@ -43,10 +44,15 @@ export class ObtainWeaponPanelGui
         this.Init()
     }
 
+    public SetParent(parent: Instance)
+    {
+        this.gui.Parent = parent
+    }
+
     public Destroy()
     {
-        this.gui.Destroy()
         this.isShowing = false
+        this.gui.Destroy()
     }
 
     private Init()
@@ -93,8 +99,19 @@ export class ObtainWeaponPanelGui
 
     public async Show()
     {
-        let targetTime = 0.2 * (1 - this.fadeScale.Scale)
 
+        //每秒旋转10°
+        let rotationSpeed = 100
+        task.spawn(() =>
+        {
+            while (this.isShowing)
+            {
+                let dt = RunService.Heartbeat.Wait()[0]
+                this.imgBack.Rotation += rotationSpeed * dt
+            }
+        })
+
+        let targetTime = 0.6 * (1 - this.fadeScale.Scale)
         let tween = TweenService.Create(this.fadeScale, new TweenInfo(targetTime, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale: 1 })
         tween.Play()
         tween.Completed.Wait()
@@ -107,5 +124,6 @@ export class ObtainWeaponPanelGui
         let tween = TweenService.Create(this.fadeScale, new TweenInfo(targetTime, Enum.EasingStyle.Back, Enum.EasingDirection.In), { Scale: 0 })
         tween.Play()
         tween.Completed.Wait()
+        this.Destroy()
     }
 }

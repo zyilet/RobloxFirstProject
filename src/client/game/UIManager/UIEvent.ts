@@ -9,7 +9,7 @@ export class DisposablePack
         this.disposables.push(disposable)
     }
 
-    public Disposable()
+    public Dispose()
     {
         this.disposables.forEach(ele => ele.Disposable())
         this.disposables.clear()

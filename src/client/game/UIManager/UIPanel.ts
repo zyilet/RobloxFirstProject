@@ -56,12 +56,12 @@ export abstract class UIPanel
     public static Name: string
 
     public abstract OnShow(depth: number, ...params: unknown[]): void
-    public abstract OnClose(): void
+    public abstract OnClose(): unknown[] | void
     public abstract BindEvent(): void
     public abstract UnBindEvent(): void
 
     public OnCovered() { }
-    public OnUnCovered() { }
+    public OnUnCovered(...params: unknown[]) { }
     public OnUpdate(dt: number) { }
 
     public Show(depth: number, ...params: unknown[])
@@ -76,16 +76,17 @@ export abstract class UIPanel
         this.UnBindEvent()
     }
 
-    public UnCovered()
+    public UnCovered(...params: unknown[])
     {
-        this.OnUnCovered()
+        this.OnUnCovered(...params)
         this.BindEvent()
     }
 
     public Close()
     {
-        this.OnClose()
+        let data = this.OnClose()
         this.UnBindEvent()
+        return data
     }
 
     public Update(dt: number)

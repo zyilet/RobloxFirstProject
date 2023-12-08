@@ -86,6 +86,12 @@ export class PlayerDataAccessor
     {
         return this._data.Weapons;
     }
+
+    public GetWeaponLimit()
+    {
+        return this._data.weaponLimit
+    }
+
     public EquipWeapon(guid: string)
     {
         this._data.EquippedWeapon.push(guid)

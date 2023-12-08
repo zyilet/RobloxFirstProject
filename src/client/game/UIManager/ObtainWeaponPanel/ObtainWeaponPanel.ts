@@ -1,5 +1,6 @@
 import { PlayerWeaponData } from "client/game/DataManager/WeaponDataManager";
 import { ObtainWeaponPanelGui } from "./ObtainWeaponPanelGui";
+import { Players } from "@rbxts/services";
 
 export class ObtainWeaponPanel
 {
@@ -20,6 +21,7 @@ export class ObtainWeaponPanel
     public async Show()
     {
         this.uiObj.Show()
+        this.uiObj.SetParent(Players.LocalPlayer.WaitForChild("PlayerGui"))
     }
 
     public async Hide()

@@ -6,6 +6,7 @@ import { UIMainPanel } from "client/game/UIManager/UIPanels/UIMainPanel";
 import { WeaponDataManager } from "client/game/DataManager/WeaponDataManager";
 import { UserInputService } from "@rbxts/services";
 import { ConfirmPanel, ConfirmPanelParam } from "client/game/UIManager/ConfirmPanel/ConfirmPanel";
+import { MainPanel } from "client/game/UIManager/MainPanel/MainPanel";
 
 export class GameMainState extends FsmStateBase<GameManager, GameStateKeys>
 {
@@ -15,7 +16,7 @@ export class GameMainState extends FsmStateBase<GameManager, GameStateKeys>
     }
     OnEntry(): void
     {
-        UIManager.GetInstance().Open(UIMainPanel)
+        UIManager.GetInstance().Open(MainPanel)
 
         UserInputService.InputEnded.Connect(input =>
         {

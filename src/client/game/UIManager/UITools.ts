@@ -10,6 +10,14 @@ export class UITools
             ?? error(`找不到【${name}】UI对象`)
     }
 
+    public static FindEles<T extends GuiObject | UIBase>(root: GuiBase, name: string)
+    {
+        return root
+            .GetDescendants()
+            .filter(ele => ele.Name === name) as T[]
+            ?? error(`找不到【${name}】UI对象`)
+    }
+
     public static FindGui(name: string)
     {
         return ReplicatedStorage.WaitForChild("UI").WaitForChild("UIPanels").WaitForChild(name) as ScreenGui

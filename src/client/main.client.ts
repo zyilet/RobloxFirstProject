@@ -13,6 +13,7 @@ import { WeaponConfigCollection } from "shared/GameConfig/WeaponConfig";
 import { ScaledButton } from "./game/UIManager/UIElements/ScaledButton";
 import { UITools } from "./game/UIManager/UITools";
 import { Subscribable, UIEvent } from "./game/UIManager/UIEvent";
+import { ScalableButton } from "./game/UIManager/Base/ScalableButton";
 
 // Knit.AddControllers(script.Parent!.FindFirstChild("controllers") as Folder);
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder);
@@ -34,7 +35,11 @@ class DebugPlayerDataPanel
 
     constructor()
     {
-        let gui = Players.LocalPlayer.WaitForChild("PlayerGui").WaitForChild("DebugPlayerDataPanel") as ScreenGui
+        let gui = Players.LocalPlayer.FindFirstChild("PlayerGui")?.FindFirstChild("DebugPlayerDataPanel") as ScreenGui
+        while (!gui && wait())
+        {
+            gui = Players.LocalPlayer.FindFirstChild("PlayerGui")?.FindFirstChild("DebugPlayerDataPanel") as ScreenGui
+        }
 
         this.frame = UITools.FindEle(gui, "Frame")
         this.weaponBox = UITools.FindEle(gui, "weaponBox")

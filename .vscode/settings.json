@@ -13,6 +13,7 @@
 	"eslint.format.enable": true,
 	"cSpell.words": [
 		"Attackable",
+		"Eles",
 		"endregion",
 		"Freefall",
 		"pcall",

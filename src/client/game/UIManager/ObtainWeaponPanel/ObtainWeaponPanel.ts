@@ -33,4 +33,9 @@ export class ObtainWeaponPanel
     {
         this.uiObj.Destroy()
     }
+
+    public SetDepth(depth: number)
+    {
+        this.uiObj.SetDepth(depth)
+    }
 }

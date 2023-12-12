@@ -1,3 +1,4 @@
+import { Players } from "@rbxts/services";
 import { DataManager } from "../DataManager/DataManager";
 import { PlayerWeaponData, WeaponDataManager } from "../DataManager/WeaponDataManager";
 import { Messages } from "../MessageManager/MessageDefine";
@@ -41,7 +42,7 @@ export class UIManager
         if (this.uiPanelStack.GetDepth() > 0)
         {
             let [name, panel] = this.uiPanelStack.Peek()
-            panel.OnUpdate(dt)
+            panel.Update(dt)
         }
 
         if (this.obtainWeaponPanel)
@@ -75,6 +76,8 @@ export class UIManager
         let panel = new UIPanel()
         this.uiPanelStack.Push([UIPanel.Name, panel])
         panel.Show(this.uiPanelStack.GetDepth(), ...params)
+
+        return panel
     }
 
     public Close<T extends UIPanel>(UIPanel: { new(): T, Name: string })
@@ -110,6 +113,8 @@ export class UIManager
         }
         this.obtainWeaponPanel = new ObtainWeaponPanel(weaponData)
         this.obtainWeaponPanel.Show()
+
+        this.obtainWeaponPanel.SetDepth((Players.LocalPlayer.FindFirstChild("PlayerGui")?.GetDescendants().size() ?? 0) + 1)
     }
 
     public ShowTips(info: string, color: Color3 | undefined = undefined)
@@ -121,6 +126,8 @@ export class UIManager
 
         this.tipsPanel ??= new TipsPanel()
         this.tipsPanel.ShowTip(info, color)
+
+        this.tipsPanel.SetDepth((Players.LocalPlayer.FindFirstChild("PlayerGui")?.GetDescendants().size() ?? 0) + 1)
     }
 
     public IsOpening<T extends UIPanel>(UIPanel: { new(): T, Name: string })

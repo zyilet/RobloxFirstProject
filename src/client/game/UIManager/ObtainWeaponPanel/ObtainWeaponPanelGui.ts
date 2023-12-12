@@ -49,6 +49,11 @@ export class ObtainWeaponPanelGui
         this.gui.Parent = parent
     }
 
+    public SetDepth(depth: number)
+    {
+        this.gui.DisplayOrder = depth
+    }
+
     public Destroy()
     {
         this.isShowing = false

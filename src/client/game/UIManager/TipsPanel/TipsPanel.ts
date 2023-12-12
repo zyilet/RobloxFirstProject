@@ -25,4 +25,8 @@ export class TipsPanel
         this.gui.SetParent(Players.LocalPlayer.WaitForChild("PlayerGui"))
         this.gui.ShowTip(tip, color)
     }
+
+    public SetDepth(depth: number){
+        this.gui.SetDepth(depth)
+    }
 }

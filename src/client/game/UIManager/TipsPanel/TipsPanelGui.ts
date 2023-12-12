@@ -53,4 +53,9 @@ export class TipsPanelGui
     {
         this.gui.Destroy()
     }
+
+    public SetDepth(depth: number)
+    {
+        this.gui.DisplayOrder = depth
+    }
 }

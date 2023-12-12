@@ -142,6 +142,14 @@ export class WeaponPanelGui
         button.SetSelected(!button.Selected)
     }
 
+    //取消选择武器
+    public UnSelectedWeapon(guid: string)
+    {
+        // if (!this.weaponItems.has(guid)) error(`列表中不存在guid为【${guid}】的武器`)
+
+        this.weaponItems.get(guid)?.SetSelected(false)
+    }
+
     public SelectAllWeapon()
     {
         this.weaponItems.forEach(button => button.SetSelected(true))

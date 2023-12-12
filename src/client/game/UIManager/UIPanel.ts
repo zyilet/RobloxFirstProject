@@ -1,4 +1,5 @@
 import { Players, ReplicatedStorage } from "@rbxts/services";
+import { Subscribable, UIEvent } from "./UIEvent";
 
 export abstract class UIPanel
 {
@@ -55,14 +56,23 @@ export abstract class UIPanel
 
     public static Name: string
 
-    public abstract OnShow(depth: number, ...params: unknown[]): void
-    public abstract OnClose(): unknown[] | void
-    public abstract BindEvent(): void
-    public abstract UnBindEvent(): void
+    private OnPanelCloseEvent: UIEvent
+    public OnPanelClose: Subscribable
 
-    public OnCovered() { }
-    public OnUnCovered(...params: unknown[]) { }
-    public OnUpdate(dt: number) { }
+    constructor()
+    {
+        this.OnPanelCloseEvent = new UIEvent()
+        this.OnPanelClose = this.OnPanelCloseEvent.CreateSubscribable()
+    }
+
+    protected abstract OnShow(depth: number, ...params: unknown[]): void
+    protected abstract OnClose(): unknown[] | void
+    protected abstract BindEvent(): void
+    protected abstract UnBindEvent(): void
+
+    protected OnCovered() { }
+    protected OnUnCovered(...params: unknown[]) { }
+    protected OnUpdate(dt: number) { }
 
     public Show(depth: number, ...params: unknown[])
     {
@@ -72,7 +82,7 @@ export abstract class UIPanel
 
     public Covered()
     {
-        this.UnCovered()
+        this.OnCovered()
         this.UnBindEvent()
     }
 
@@ -86,6 +96,8 @@ export abstract class UIPanel
     {
         let data = this.OnClose()
         this.UnBindEvent()
+
+        this.OnPanelCloseEvent.Publish()
         return data
     }
 

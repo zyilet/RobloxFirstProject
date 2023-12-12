@@ -9,6 +9,7 @@ import { MessageManager } from "client/game/MessageManager/MessageManager";
 import { Messages } from "client/game/MessageManager/MessageDefine";
 import { PlayerWeaponData } from "client/game/DataManager/WeaponDataManager";
 import { KnitClient } from "@rbxts/knit";
+import { WeaponInfoPanel } from "../WeaponInfoPanel/WeaponInfoPanel";
 
 export class WeaponPanel extends UIPanel
 {
@@ -56,6 +57,11 @@ export class WeaponPanel extends UIPanel
                 {
                     this.selectedWeapons.clear()
                     this.selectedWeapons.push(data.Guid)
+
+                    UIManager.GetInstance().Open(WeaponInfoPanel, data.Guid).OnPanelClose.SubScribe(() =>
+                    {
+                        this.uiObj.UnSelectedWeapon(data.Guid)
+                    })
                     return
                 }
 
@@ -84,11 +90,14 @@ export class WeaponPanel extends UIPanel
         this.uiObj.OnMultiSellClick
             .SubScribe(() => this.curPanelState === "normal" ? this.ChangeStateToMultiSell() : this.Sell())
             .AddTo(this.disposablePack)
+
+        this.uiObj.SetInterActive(true)
     }
 
     public UnBindEvent(): void
     {
         this.disposablePack.Dispose()
+        this.uiObj.SetInterActive(false)
     }
 
     private InitMessage()

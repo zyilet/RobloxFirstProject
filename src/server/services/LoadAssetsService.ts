@@ -1,5 +1,5 @@
 import { KnitServer as Knit, RemoteSignal } from "@rbxts/knit";
-import { InsertService } from "@rbxts/services";
+import { InsertService, Players } from "@rbxts/services";
 
 declare global
 {
@@ -25,6 +25,16 @@ const LoadAssetsService = Knit.CreateService({
 
     KnitStart()
     {
+        Players.PlayerAdded.Connect(p =>
+        {
+            if (p.FindFirstChild("Cache") === undefined)
+            {
+                let folder = new Instance("Folder")
+                folder.Name = "Cache"
+                folder.Parent = p
+            }
+        })
+
         this.Client.LoadAsset.Connect((p, assetId) =>
         {
             if (loading.find(([id, _]) => id === assetId))

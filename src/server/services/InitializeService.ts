@@ -54,12 +54,26 @@ const InitializeService = Knit.CreateService({
                     task.wait(1)
                     progress = assetCacheManager.GetProgress()
                 }
+
+                //temp
+                progress = 0.9
+                while (!this.TempFlag && wait(1))
+                {
+                    this.Client.InitializeProgress.Fire(player, {
+                        state: "initializing",
+                        progress
+                    })
+                }
+                progress = 1
+
                 this.Client.InitializeProgress.Fire(player, {
                     state: "initialized"
                 })
             })
         })
     },
+
+    TempFlag: false
 });
 
 export = InitializeService;

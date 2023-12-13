@@ -1,4 +1,4 @@
-import { Players, RunService, StarterGui } from "@rbxts/services";
+import { InsertService, Players, ReplicatedStorage, RunService, StarterGui, Workspace } from "@rbxts/services";
 import { MonsterManager } from "./game/Monster/MonsterManager";
 import { GameDataManager } from "./game/DataStore/GameDataManager";
 import { KnitServer } from "@rbxts/knit";
@@ -13,10 +13,38 @@ Players.CharacterAutoLoads = false;
 KnitServer.AddServices(script.Parent!.FindFirstChild('services') as Folder)
 // Component.Auto(script.Parent!.FindFirstChild("components") as Folder)
 
+
+Players.PlayerAdded.Connect(p =>
+{
+    print("添加武器")
+    let id = ["测试武器1", "测试武器2"]
+
+    wait(5)
+
+    for (let i = 0; i < 10; i++)
+    {
+        KnitServer.GetService("WeaponService").AddWeapon(p, id[i % 2])
+    }
+})
+
 KnitServer.Start()
     .andThen(() =>
     {
-        print("Server Start")
+        //加载场景 15621801322
+        let [s, r] = pcall(() => InsertService.LoadAsset(15621801322))
+        if (s)
+        {
+            let env = (r as Model).GetChildren().pop()!
+            env.Parent = Workspace
+        }
+
+        //加载UI
+        [s, r] = pcall(() => InsertService.LoadAsset(15621866202))
+        if (s)
+        {
+            let env = (r as Model).GetChildren().pop()!
+            env.Parent = ReplicatedStorage
+        }
 
         let monsterManager = MonsterManager.GetInstance()
         let petManager = PetManager.GetInstance()
@@ -38,32 +66,6 @@ KnitServer.Start()
             GameDataManager.GetInstance().GetPlayerDataAccessor(player).ResetData();
         })
 
-        //test
-        // let testOwner = new TestOwner()
-        // let testFsm = new Fsm<TestOwner, TestStateKeys>()
-        // testFsm.AddState(new IdleState(testOwner, testFsm))
-        // testFsm.AddState(new RunState(testOwner, testFsm))
-        // testFsm.Start("IdleState")
-
-        // RunService.Heartbeat.Connect(dt =>
-        // {
-        //     testFsm.Update(dt)
-        // })
-
-        Players.PlayerAdded.Connect(p =>
-        {
-            let folder = new Instance("Folder")
-            folder.Name = "Cache"
-            folder.Parent = p
-
-            let id = ["测试武器1", "测试武器2"]
-
-            wait(2)
-
-            for (let i = 0; i < 2; i++)
-            {
-                KnitServer.GetService("WeaponService").AddWeapon(p, id[i % 2])
-            }
-        })
+        KnitServer.GetService("InitializeService").TempFlag = true
     })
     .catch(warn)
